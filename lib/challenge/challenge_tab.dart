@@ -39,7 +39,7 @@ class _ChallengeTabState extends State<ChallengeTab>
           tabs: const [
             Tab(text: '챌린지 앱'),
             Tab(text: '진행 중'),
-            Tab(text: '완료됨'),
+            Tab(text: '완료했으요'),
           ],
         ),
       ),
