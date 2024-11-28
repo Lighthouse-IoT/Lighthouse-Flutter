@@ -11,6 +11,7 @@ class ExamItem {
   final String ex4; // ex4 추가
   final String correctEx;
   final int exLevel;
+  final String? userAnswer;
 
   ExamItem({
     required this.exIdx,
@@ -25,6 +26,7 @@ class ExamItem {
     required this.ex4, // ex4 필드 초기화
     required this.correctEx,
     required this.exLevel,
+    this.userAnswer
   });
 
   // JSON -> 객체 변환
@@ -42,6 +44,7 @@ class ExamItem {
       ex4: json['ex4'], // ex4 매핑
       correctEx: json['correct_ex'],
       exLevel: json['ex_level'],
+      userAnswer: json['user_answer'],
     );
   }
 
@@ -60,6 +63,7 @@ class ExamItem {
       'ex4': ex4, // ex4 추가
       'correct_ex': correctEx,
       'ex_level': exLevel,
+      'user_answer': userAnswer,
     };
   }
 }

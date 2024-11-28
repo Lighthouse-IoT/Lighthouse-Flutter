@@ -39,7 +39,7 @@ class StartScreen extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple[100],
+                backgroundColor: Colors.lightBlueAccent,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 40,
                   vertical: 20,

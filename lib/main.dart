@@ -8,7 +8,9 @@ import 'package:flutter21/challenge/allch.dart';
 import 'package:flutter21/challenge/completedch.dart';
 import 'package:flutter21/challenge/challenge_tab.dart';
 import 'package:flutter21/challenge/ongoingch.dart';
-import 'package:flutter21/exam.dart';
+import 'package:flutter21/model/exam.dart';
+import 'package:flutter21/mypage/schedule.dart';
+import 'package:flutter21/mypage/study_stats.dart';
 import 'package:flutter21/study_goal/certification.dart';
 import 'package:flutter21/study_goal/goal.dart';
 import 'package:flutter21/study_goal/level.dart';
@@ -48,7 +50,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Allch()
+      home: Loginpage()
     );
   }
 }
