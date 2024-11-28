@@ -106,16 +106,8 @@ class HomeScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _buildMenuButton('성적관리', Icons.grade, Colors.purple[100]!),
-                      _buildMenuButton('공부시작', Icons.play_arrow, Colors.purple[100]!),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildMenuButton('주간 챌린지', Icons.calendar_today, Colors.purple[100]!),
-                      _buildMenuButton('기출문제', Icons.assignment, Colors.purple[100]!),
+                      _buildMenuButton('기출문제', Icons.grade, Colors.purple[100]!),
+                      _buildMenuButton('공부시작', Icons.assignment, Colors.purple[100]!),
                     ],
                   ),
                 ],
@@ -152,8 +144,8 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildMenuButton(String title, IconData icon, Color color) {
     return Container(
-      width: 150,
-      height: 100,
+      width: 130,
+      height: 90,
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(10),
