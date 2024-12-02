@@ -264,10 +264,9 @@ class ResultPage extends StatelessWidget {
               ),
             );
           } else if (snapshot.hasData) {
-            final dividedScore = snapshot.data! / 3;
             return Center(
               child: Text(
-                '점수 : ${dividedScore.toStringAsFixed}',
+                  '획득한 점수: ${(snapshot.data)}',
                 style: const TextStyle(fontSize: 24),
               ),
             );
