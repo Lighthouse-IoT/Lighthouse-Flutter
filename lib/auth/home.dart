@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-void main() => runApp(const Home());
+void main() => runApp(Home());
 
 class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
+  Home({Key? key}) : super(key: key);
+
+  dynamic userName = '';
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +19,7 @@ class Home extends StatelessWidget {
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
+  static const storage = FlutterSecureStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +62,7 @@ class HomeScreen extends StatelessWidget {
                         ElevatedButton(
                           onPressed: () {},
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.purple[200],
+                            backgroundColor: Colors.lightBlueAccent,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -73,7 +77,9 @@ class HomeScreen extends StatelessWidget {
                 Column(
                   children: [
                     IconButton(
-                      onPressed: () {
+                      onPressed: ()async {
+                        dynamic a = await storage.read(key:"idToken");
+                        print(a);
                         print("메뉴 버튼 클릭됨");
                       },
                       icon: const Icon(Icons.menu, color: Colors.black),
@@ -98,16 +104,20 @@ class HomeScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _buildMenuButton('학습통계 확인', Icons.bar_chart, Colors.purple[100]!),
-                      _buildMenuButton('오답정리', Icons.edit, Colors.purple[100]!),
+                      _buildMenuButton(
+                          '학습통계 확인', Icons.bar_chart, Colors.lightBlueAccent),
+                      _buildMenuButton(
+                          '오답정리', Icons.edit, Colors.lightBlueAccent),
                     ],
                   ),
                   const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _buildMenuButton('기출문제', Icons.grade, Colors.purple[100]!),
-                      _buildMenuButton('공부시작', Icons.assignment, Colors.purple[100]!),
+                      _buildMenuButton(
+                          '기출문제', Icons.grade, Colors.lightBlueAccent),
+                      _buildMenuButton(
+                          '공부시작', Icons.assignment, Colors.lightBlueAccent),
                     ],
                   ),
                 ],

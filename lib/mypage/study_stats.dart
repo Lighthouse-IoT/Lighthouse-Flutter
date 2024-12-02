@@ -86,7 +86,7 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.purple[100],
+                color: Colors.lightBlueAccent,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Text(

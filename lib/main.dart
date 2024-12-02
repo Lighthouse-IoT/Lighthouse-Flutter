@@ -20,7 +20,7 @@ import 'package:flutter21/study_goal/subjecth.dart';
 import 'package:flutter21/study_goal/timer.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {

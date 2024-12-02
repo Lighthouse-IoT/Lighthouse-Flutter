@@ -39,7 +39,7 @@ class ScheduleScreen extends StatelessWidget {
               width: double.infinity, // 전체 너비로 확장
               padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.purple[100],
+                color: Colors.lightBlueAccent,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Center(
@@ -109,7 +109,7 @@ class ScheduleScreen extends StatelessWidget {
       width: double.infinity, // 전체 너비로 확장
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.purple[100],
+        color: Colors.lightBlueAccent,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(

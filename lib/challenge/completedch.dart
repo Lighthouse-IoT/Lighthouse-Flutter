@@ -66,7 +66,7 @@ class ChallengeListView extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> challenges = [
       {
-        'title': '집에 가기 챌린지',
+        'title': '한식 조리기능사',
         'description': '챌린지 진행해야할 내용',
         'period': '11월 22일 - 11월 24일',
         'status': '성공',
@@ -74,7 +74,7 @@ class ChallengeListView extends StatelessWidget {
         'statusColor': Colors.green,
       },
       {
-        'title': '잠자기 챌린지',
+        'title': '빅데이터 분석기사',
         'description': '챌린지 진행해야할 내용',
         'period': '11월 24일 - 11월 29일',
         'status': '실패',
