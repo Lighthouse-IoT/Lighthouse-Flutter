@@ -1,12 +1,15 @@
 import 'dart:convert'; // JSON 인코딩/디코딩
 import 'package:flutter/material.dart';
+import 'package:flutter21/study_goal/exam_result.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter21/model/exammodel.dart';
 
 class Exam extends StatefulWidget {
   final String userId; // 로그인 페이지에서 전달받은 userId
+  final String keyword;
+  final String subjects;
 
-  Exam({required this.userId});
+  Exam({required this.userId, required this.keyword, required this.subjects});
 
   @override
   _QuestionScreenState createState() => _QuestionScreenState();
@@ -16,11 +19,12 @@ class _QuestionScreenState extends State<Exam> {
   int _currentQuestionIndex = 0; // 현재 보여줄 문제의 인덱스
   List<ExamItem> _examItems = []; // 서버에서 가져온 문제 리스트
   int? _selectedOption; // 사용자가 선택한 보기 인덱스
-
   // 문제를 서버에서 가져오는 함수
   Future<void> fetchQuestionsFromDB() async {
+    print(widget.keyword);
+    print(widget.subjects);
     final url = Uri.parse(
-        'http://192.168.219.77:3080/exam/recommended-exams?q=신경망&section=["2"]');
+        'http://192.168.219.77:3080/exam/recommended-exams?q=${widget.keyword}&section=${widget.subjects}');
 
     try {
       final response = await http.get(url, headers: {
@@ -57,7 +61,7 @@ class _QuestionScreenState extends State<Exam> {
     final url = Uri.parse('http://192.168.219.77:3080/exam/solving');
 
     final data = {
-      'userId': 'kim15', // 전달받은 userId 사용
+      'userId': 'hello', // 전달받은 userId 사용
       'exIdx': exIdx,
       'userAnswer': userAnswer,
       'correctEx': correctEx,
@@ -104,9 +108,16 @@ class _QuestionScreenState extends State<Exam> {
         _selectedOption = null; // 다음 문제로 이동 시 선택 초기화
       });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('모든 문제를 완료했습니다.')),
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ResultPage()
+        ),
+          (route) => false,
       );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text('모든 문제를 완료했습니다.')),
+      // );
     }
   }
 

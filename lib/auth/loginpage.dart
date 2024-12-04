@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter21/auth/home.dart';
 import 'package:flutter21/auth/joinpage.dart';
 import 'package:dio/dio.dart';
+import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 
 class Loginpage extends StatelessWidget {
-  const Loginpage({super.key});
-
+  final TextEditingController idCon = TextEditingController();
+  final TextEditingController pwCon = TextEditingController();
+  static const storage = FlutterSecureStorage();
 
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController idCon = TextEditingController();
-    TextEditingController pwCon = TextEditingController();
-
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -120,7 +121,12 @@ class Loginpage extends StatelessWidget {
         data: {'userId': id.toString(), 'userPw': pw},
       );
 
+      print(res.data);
+
       if (res.statusCode == 200) {
+        // final data = jsonDecode(res.body);
+        await storage.write(key: "idToken", value: res.data['userId']);
+        await storage.write(key: "nameToken", value: res.data['userName']);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('로그인 성공:')),
         );

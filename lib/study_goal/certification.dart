@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter21/model/exam.dart';
 
 void main() => runApp(const Certification());
 
@@ -9,111 +11,235 @@ class Certification extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const StudySettingsScreen(),
+      home: const CertificationSelectionScreen(),
     );
   }
 }
 
-class StudySettingsScreen extends StatefulWidget {
-  const StudySettingsScreen({Key? key}) : super(key: key);
+// 1. 자격증 종류 선택 화면
+class CertificationSelectionScreen extends StatelessWidget {
+  const CertificationSelectionScreen({Key? key}) : super(key: key);
 
-  @override
-  _StudySettingsScreenState createState() => _StudySettingsScreenState();
-}
-
-class _StudySettingsScreenState extends State<StudySettingsScreen> {
-  final List<String> goals = ["1.한식조리기능사", "2.빅데이터분석기사"]; // 공부 목표 리스트
-
-  int _currentIndex = 0; // 현재 선택된 탭 인덱스
-
-  final List<Widget> _pages = [
-    Center(child: Text('Challenge Page', style: TextStyle(fontSize: 20))),
-    Center(child: Text('Ranking Page', style: TextStyle(fontSize: 20))),
-    Center(child: Text('Schedule Page', style: TextStyle(fontSize: 20))),
-    Center(child: Text('MyPage', style: TextStyle(fontSize: 20))),
+  final List<Map<String, dynamic>> certifications = const [
+    {
+      "name": "빅데이터분석기사",
+      "subjects": ["빅데이터 분석 기획", "빅데이터 탐색", "빅데이터 모델링", "빅데이터 결과 분석"]
+    },
+    {
+      "name": "한식조리기능사",
+      "subjects": ["한식 재료 관리", "음식 조리 및 위생"]
+    },
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'E-ROOM',
-          style: TextStyle(color: Colors.black),
-        ),
+        title: const Text('자격증 선택', style: TextStyle(color: Colors.black)),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: _currentIndex == 0
-          ? Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              '공부 목표 설정',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 40), // "공부 목표 설정" 아래 간격
-            Column(
-              children: goals.map((goal) {
-                return Column(
-                  children: [
-                    Container(
-                      width: 250,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.blue[300], // 색상 변경
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Center(
-                        child: Text(
-                          goal,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: certifications.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(certifications[index]["name"]),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TimerScreen(
+                          subjects: List<String>.from(
+                              certifications[index]["subjects"]),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 40), // 각 목표 항목 사이 간격
-                  ],
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// 2. 타이머 화면
+class TimerScreen extends StatefulWidget {
+  final List<String> subjects;
+
+  const TimerScreen({Key? key, required this.subjects}) : super(key: key);
+
+  @override
+  _TimerScreenState createState() => _TimerScreenState();
+}
+
+class _TimerScreenState extends State<TimerScreen> {
+  late Timer _timer;
+  int _seconds = 0;
+  bool isStudyEnded = false; // 공부 종료 상태
+  final TextEditingController _keywordController = TextEditingController();
+  late Map<String, bool> _selectedSubjects;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedSubjects = {
+      for (var subject in widget.subjects) subject: false
+    }; // 초기화
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    _keywordController.dispose(); // 컨트롤러 해제
+    super.dispose();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _seconds++;
+      });
+    });
+  }
+
+  void _stopStudy() {
+    setState(() {
+      isStudyEnded = true; // 공부 종료 상태 변경
+    });
+    _timer.cancel();
+  }
+
+  void _searchKeyword() {
+    // 선택한 과목 추출
+    final selectedSubjects = _selectedSubjects.entries
+        .where((entry) => entry.value)
+        .map((entry) => entry.key)
+        .toList();
+
+    // 과목 인덱스 저장 리스트
+    List<int> trueIndices = [];
+    int index = 0;
+
+    _selectedSubjects.forEach((key, value) {
+      if (value) {
+        trueIndices.add(index);
+      }
+      index++;
+    });
+
+    // 저장한 인덱스 int -> string
+    List<String> selectedSubjectNum = trueIndices.map((i) => (i + 1).toString()).toList();
+    String realStringSubject = '[${selectedSubjectNum.map((e) => '"$e"').join(", ")}]';
+
+
+    final keyword = _keywordController.text.trim();
+    print(keyword);
+    print(selectedSubjectNum);
+    if (keyword.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('키워드를 입력해주세요.')),
+      );
+      return;
+    }
+
+    if (selectedSubjects.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('최소 하나의 과목을 선택해주세요.')),
+      );
+      return;
+    }
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Exam(userId: "hello",keyword: keyword, subjects: realStringSubject)
+      ),
+        (route) => false,
+    );
+  }
+
+  String _formatTime(int seconds) {
+    final minutes = (seconds ~/ 60).toString().padLeft(2, '0');
+    final secs = (seconds % 60).toString().padLeft(2, '0');
+    return "$minutes:$secs";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: isStudyEnded
+            ? SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                '공부 종료! 과목을 선택하세요:',
+                style:
+                TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              ..._selectedSubjects.keys.map((subject) {
+                return CheckboxListTile(
+                  title: Text(subject),
+                  value: _selectedSubjects[subject],
+                  onChanged: (bool? value) {
+                    setState(() {
+                      _selectedSubjects[subject] = value ?? false;
+                    });
+                  },
                 );
               }).toList(),
+              const Divider(height: 40, thickness: 1),
+              const Text(
+                '키워드를 입력하고 검색하세요:',
+                style:
+                TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextField(
+                  controller: _keywordController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: '키워드 입력',
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _searchKeyword,
+                child: const Text('검색'),
+              ),
+            ],
+          ),
+        )
+            : Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.access_time,
+                size: 60, color: Colors.black54),
+            const SizedBox(height: 20),
+            Text(
+              _formatTime(_seconds),
+              style: const TextStyle(
+                  fontSize: 36, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _stopStudy,
+              child: const Text('공부 종료'),
             ),
           ],
         ),
-      )
-          : _pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index; // 현재 선택된 탭 업데이트
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.flag),
-            label: 'Challenge',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
-            label: 'Ranking',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Schedule',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'MyPage',
-          ),
-        ],
       ),
     );
   }
