@@ -1,25 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-void main() => runApp(const StudyStats());
-
-class StudyStats extends StatelessWidget {
-  const StudyStats({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const LearningStatsScreen(userId: 'user123'),
-    );
-  }
-}
 
 class LearningStatsScreen extends StatefulWidget {
-  final String userId;
-
-  const LearningStatsScreen({Key? key, required this.userId}) : super(key: key);
+  const LearningStatsScreen({Key? key}) : super(key: key);
 
   @override
   State<LearningStatsScreen> createState() => _LearningStatsScreenState();
@@ -30,22 +16,49 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
   String averageStudyTime = '00:00:00';
   String focusTime = '00:00:00';
 
+
   String convertMinutesToTimeFormat(int minutes) {
     final int hours = minutes ~/ 60;
     final int remainingMinutes = minutes % 60;
     return '${hours.toString().padLeft(2, '0')}:${remainingMinutes.toString().padLeft(2, '0')}:00';
   }
 
+  static const storage = FlutterSecureStorage();
+  dynamic userInfo = '';
+
+  var userId;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchStudyInfo();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _asyncMethod();
+    }) ;
+  }
+
+  _asyncMethod() async {
+    userInfo = await storage.read(key: 'idToken');
+
+    if (userId != null) {
+      setState(() {
+        userId = userId;
+      });
+    } else {
+      print('로그인이 필요합니다.');
+    }
+  }
+
   Future<void> fetchStudyInfo() async {
-    final String url = 'http://192.168.219.77:3080/profile/study-info?userId=${widget.userId}';
+    final String url = 'http://192.168.219.77:3080/profile/study-info/${userId}';
 
     try {
       final response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-
-        print('Received data: $data');
 
         setState(() {
           totalStudyTime = convertMinutesToTimeFormat(data['totalStudyTime'] ?? 0);
@@ -58,12 +71,6 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
     } catch (e) {
       print('Error fetching study info: $e');
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fetchStudyInfo();
   }
 
   @override
@@ -117,29 +124,6 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.flag),
-            label: 'Challenge',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
-            label: 'Ranking',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Schedule',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Mypage',
-          ),
-        ],
       ),
     );
   }

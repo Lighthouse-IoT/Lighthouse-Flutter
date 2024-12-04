@@ -1,8 +1,8 @@
 import 'dart:convert'; // JSON 인코딩/디코딩
 import 'package:flutter/material.dart';
-import 'package:flutter21/study_goal/exam_result.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter21/model/exammodel.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Exam extends StatefulWidget {
   final String userId; // 로그인 페이지에서 전달받은 userId
@@ -58,6 +58,7 @@ class _QuestionScreenState extends State<Exam> {
     required String userAnswer,
     required String correctEx,
   }) async {
+    // var userId = await storage.read(key: 'idToken');
     final url = Uri.parse('http://192.168.219.77:3080/exam/solving');
 
     final data = {
@@ -108,24 +109,21 @@ class _QuestionScreenState extends State<Exam> {
         _selectedOption = null; // 다음 문제로 이동 시 선택 초기화
       });
     } else {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-            builder: (context) => ResultPage()
-        ),
-          (route) => false,
-      );
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(content: Text('모든 문제를 완료했습니다.')),
+      // TODO: 여기 경로 살려야됨
+      // Navigator.pushAndRemoveUntil(
+      //   context,
+      //   MaterialPageRoute(
+      //       builder: (context) => ()
+      //   ),
+      //     (route) => false,
       // );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('모든 문제를 완료했습니다.')),
+      );
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    fetchQuestionsFromDB(); // 초기화 시 문제를 가져옴
-  }
+
 
   @override
   Widget build(BuildContext context) {

@@ -1,15 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:flutter21/auth/home.dart';
-import 'package:flutter21/auth/joinpage.dart';
 import 'package:dio/dio.dart';
-import 'dart:convert';
+import 'package:flutter21/auth/joinpage.dart';
+import 'package:flutter21/pagecontainer.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+class Loginpage extends StatefulWidget {
+  const Loginpage({super.key});
 
-class Loginpage extends StatelessWidget {
+  @override
+  State<Loginpage> createState() => _LoginpageState();
+}
+
+class _LoginpageState extends State<Loginpage> {
   final TextEditingController idCon = TextEditingController();
   final TextEditingController pwCon = TextEditingController();
   static const storage = FlutterSecureStorage();
+    dynamic userInfo = '';
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _asyncMethod();
+    }) ;
+  }
+
+  _asyncMethod() async {
+    userInfo = await storage.read(key: 'idToken');
+
+    if (userInfo != null) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => MainScreen()),
+            (route) => false,
+      );
+    } else {
+      print('로그인이 필요합니다.');
+    }
+  }
 
 
   @override
@@ -121,18 +151,15 @@ class Loginpage extends StatelessWidget {
         data: {'userId': id.toString(), 'userPw': pw},
       );
 
-      print(res.data);
-
       if (res.statusCode == 200) {
-        // final data = jsonDecode(res.body);
-        await storage.write(key: "idToken", value: res.data['userId']);
-        await storage.write(key: "nameToken", value: res.data['userName']);
+        await storage.write(key: 'idToken', value: res.data['userId']);
+        await storage.write(key: 'nameToken', value: res.data['userName']);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('로그인 성공:')),
+          const SnackBar(content: Text('로그인 성공')),
         );
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (_) => Home()),
+          MaterialPageRoute(builder: (_) => MainScreen()),
               (route) => false,
         );
       } else {
@@ -141,10 +168,16 @@ class Loginpage extends StatelessWidget {
         );
       }
     } catch (e) {
-      print('Dio 예외 발생: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('네트워크 오류 발생: $e')),
       );
     }
+  }
+
+  @override
+  void dispose() {
+    idCon.dispose();
+    pwCon.dispose();
+    super.dispose();
   }
 }

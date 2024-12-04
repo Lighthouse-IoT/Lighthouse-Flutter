@@ -70,7 +70,7 @@ class ResultPage extends StatelessWidget {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => Home()
+                        builder: (context) => HomeScreen()
                     ),
                         (route) => false,
                   );

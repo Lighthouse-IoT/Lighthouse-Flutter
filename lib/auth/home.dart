@@ -1,25 +1,83 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-void main() => runApp(Home());
 
-class Home extends StatelessWidget {
-  Home({Key? key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
-  dynamic userName = '';
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const HomeScreen(),
-    );
-  }
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+
+class _HomeScreenState extends State<HomeScreen> {
+  // 예시: 버튼 클릭 카운트 상태
+  int _followCount = 0;
+
   static const storage = FlutterSecureStorage();
+  dynamic userName = '';
+
+  var userImage;
+  var userPoint;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchPoint();
+    }) ;
+  }
+
+  _asyncMethod() async {
+    userName = await storage.read(key: 'nameToken');
+
+    if (userName != null) {
+      setState(() {
+        userName = userName;
+      });
+    } else {
+      print('로그인이 필요합니다.');
+    }
+  }
+
+  Future<int> fetchPoint() async {
+    var userId = await storage.read(key: 'idToken');
+    final url = Uri.parse('http://192.168.219.77:3080/profile/user-profile/${userId}');
+    try {
+      final response = await http.get(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+      );
+
+      // 응답 상태 코드 출력
+      print('HTTP 상태 코드: ${response.statusCode}');
+      // 서버에서 전달된 원본 데이터 출력
+      print('서버 응답 데이터: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> decodedData = jsonDecode(response.body);
+        print('디코딩된 데이터: $decodedData');
+        setState(() {
+          userName = decodedData['user_name'];
+          userImage = decodedData['user_image'];
+          userPoint = decodedData['user_point'];
+        });
+        return decodedData['point'];
+      } else {
+        throw Exception('점수를 가져오는 데 실패했습니다. 상태 코드: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('에러 발생: $e');
+      throw Exception('네트워크 에러가 발생했습니다: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,24 +101,38 @@ class HomeScreen extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundImage: AssetImage('assets/profile.png'),
+                    if (userImage != null)
+                    ClipOval(
+                      child: Image.network(
+                        Uri.encodeFull(userImage!),
+                        width: 60, // 너비
+                        height: 60, // 높이
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Text('이미지를 불러올 수 없습니다.'),// 이미지를 잘라서 맞춤
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          '김공부',
+                        Text(
+                          userName,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        Text(
+                          '${userPoint.toString()} 포인트'
+                        ),
+                        const SizedBox(height: 2),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            setState(() {
+                              _followCount++;
+                            });
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.lightBlueAccent,
                             shape: RoundedRectangleBorder(
@@ -77,9 +149,7 @@ class HomeScreen extends StatelessWidget {
                 Column(
                   children: [
                     IconButton(
-                      onPressed: ()async {
-                        dynamic a = await storage.read(key:"idToken");
-                        print(a);
+                      onPressed: () {
                         print("메뉴 버튼 클릭됨");
                       },
                       icon: const Icon(Icons.menu, color: Colors.black),
@@ -125,29 +195,6 @@ class HomeScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.flag),
-            label: 'Challenge',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
-            label: 'Ranking',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Schedule',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Mypage',
-          ),
-        ],
       ),
     );
   }
