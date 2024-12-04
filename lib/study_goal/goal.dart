@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'certification.dart'; // certification.dart 파일 import
+import 'package:flutter21/study_goal/certification.dart'; // certification.dart 파일 import
 
 void main() => runApp(const Goal());
 
