@@ -28,7 +28,7 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
   void initState() {
     // TODO: implement initState
     super.initState();
-    fetchWrongAnswers();
+
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _asyncMethod();
@@ -45,22 +45,22 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
   }
 
   _asyncMethod() async {
-    userInfo = await storage.read(key: 'idToken');
+    userId = await storage.read(key: 'idToken'); // `userId` 값을 갱신
 
     if (userId != null) {
       setState(() {
-        userId = userId;
+        userId = userId; // 이미 갱신된 값을 `setState`로 반영
       });
+      fetchWrongAnswers(); // 오답 데이터를 가져오는 함수 호출
     } else {
       print('로그인이 필요합니다.');
     }
   }
 
 
-
   Future<void> fetchWrongAnswers() async {
     var userId = await storage.read(key: 'idToken');
-    final url = Uri.parse('http://192.168.219.77:3080/review/reviews/${userId}'); // userId 적용
+    final url = Uri.parse('http://192.168.219.77:3080/review/reviews?userId=$userId'); // userId 적용
 
     try {
       final response = await http.get(

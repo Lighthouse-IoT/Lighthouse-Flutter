@@ -13,12 +13,12 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 2; // 현재 선택된 탭의 인덱스
+  int _currentIndex = 1; // 현재 선택된 탭의 인덱스
 
   // 탭에 해당하는 페이지들을 리스트로 설정
   final List<Widget> _pages = [
-    StartScreen(),        // 첫 번째 탭: Home 화면
-    Startexam(),      // 세 번째 탭: Profile 화면
+    StartScreen(),
+    HomeScreen(),
     RankingPage()
 
   ];
@@ -26,15 +26,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          _currentIndex == 0
-              ? 'study'
-              : _currentIndex == 1
-              ? 'Home'
-              : 'goal',
-        ),
-      ),
       body: _pages[_currentIndex], // 현재 선택된 탭에 해당하는 화면 표시
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -45,16 +36,16 @@ class _MainScreenState extends State<MainScreen> {
         },
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.menu_book_outlined),
             label: 'study',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.book),
+            icon: Icon(Icons.home_filled),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'goal',
+            icon: Icon(Icons.stacked_bar_chart_rounded),
+            label: 'ranking',
           ),
         ],
       ),

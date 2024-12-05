@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter21/auth/home.dart';
 import 'package:flutter21/model/exam.dart';
 
 void main() => runApp(const Certification());
@@ -142,7 +143,7 @@ class _TimerScreenState extends State<TimerScreen> {
 
     final keyword = _keywordController.text.trim();
     print(keyword);
-    print(selectedSubjectNum);
+    print(realStringSubject);
     if (keyword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('키워드를 입력해주세요.')),
@@ -159,7 +160,7 @@ class _TimerScreenState extends State<TimerScreen> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (context) => Exam(userId: "hello",keyword: keyword, subjects: realStringSubject)
+        builder: (context) => Exam(keyword: keyword, subjects: realStringSubject)
       ),
         (route) => false,
     );
@@ -242,5 +243,6 @@ class _TimerScreenState extends State<TimerScreen> {
         ),
       ),
     );
+
   }
 }

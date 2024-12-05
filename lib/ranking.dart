@@ -68,92 +68,139 @@ class _RankingPageState extends State<RankingPage> {
     }
   }
 
-
+// 순위에 따른 아이콘 반환
+  String getRankIcon(int index) {
+    switch (index) {
+      case 0:
+        return '🥇';
+      case 1:
+        return '🥈';
+      case 2:
+        return '🥉';
+      default:
+        return '';
+    }
+  }
 
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('E-ROOM 랭킹',style: TextStyle(color: Colors.white),),
-        centerTitle: true,
-        backgroundColor: Color(0xFF5356FF),
-      ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: userListFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('데이터를 불러오는데 실패했습니다.'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('사용자 데이터가 없습니다.'));
-          }
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'E-ROOM',
+            style: TextStyle(color: Colors.black, fontSize: 24),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.white,
+          elevation: 0,
+        ),
+        body: FutureBuilder<List<Map<String, dynamic>>>(
+          future: userListFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return const Center(child: Text('데이터를 불러오는데 실패했습니다.'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('사용자 데이터가 없습니다.'));
+            }
+            final userList = snapshot.data!;
 
-          final userList = snapshot.data!;
-          return ListView.builder(
-            itemCount: userList.length,
-            itemBuilder: (context, index) {
-              final user = userList[index];
+            return Scaffold(
+              appBar: AppBar(
+              title: Text('전체랭킹'),
+              backgroundColor: Colors.white,
+            ),
+              body: Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: userList.length,
+                        padding: EdgeInsets.zero,
+                        itemBuilder: (context, index) {
+                          final user = userList[index];
+                          final rankIcon = getRankIcon(index);
 
-              // 카드 색상 및 순위 아이콘 설정
-              Color cardColor;
-              String rankIcon;
-              switch (index) {
-                case 0:
-                  cardColor = Colors.amber.shade200;
-                  rankIcon = '🥇';
-                  break;
-                case 1:
-                  cardColor = Colors.amber.shade100;
-                  rankIcon = '🥈';
-                  break;
-                case 2:
-                  cardColor = Colors.grey.shade300;
-                  rankIcon = '🥉';
-                  break;
-                default:
-                  cardColor = Colors.white;
-                  rankIcon = '';
-              }
-
-              return Card(
-                color: cardColor,
-                margin: EdgeInsets.symmetric(vertical: 8.0),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: user['userImage'].isNotEmpty
-                        ? NetworkImage(user['userImage'])
-                        : AssetImage('assets/profile.png') as ImageProvider,
-                    backgroundColor: Colors.deepPurple.shade100,
-                  ),
-                  title: Text(
-                    '$rankIcon ${user['userName']}',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                  ),
-                  subtitle: Text(
-                    '포인트: ${user['userPoint']}pt',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  onTap: () {
-                  // 클릭 시 UserDetailsPage로 이동하며 userId 전달
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UserDetailPage(userId: user['userId']),
+                          return Container(
+                            margin: EdgeInsets.zero,
+                            padding: EdgeInsets.zero,
+                            child: Card(
+                              color: Colors.white,
+                              // 기본 색상만 사용 (순위별 색상 제거)
+                              margin: EdgeInsets.zero,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.zero, // 모서리를 직각으로 설정
+                              ),
+                              child: ListTile(
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 15,
+                                  horizontal: 30,
+                                ),
+                                leading: Row(
+                                  mainAxisSize: MainAxisSize.min, // Row의 크기를 최소로 제한
+                                  children: [
+                                    Text(
+                                      rankIcon, // 이모지 아이콘 추가
+                                      style: const TextStyle(
+                                      fontSize: 24,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${index + 1}', // 순위 표시 (index는 0부터 시작하므로 +1)
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 25), // 순위와 프로필 사진 사이 간격
+                                    CircleAvatar(
+                                      backgroundImage: user['userImage'].isNotEmpty
+                                          ? NetworkImage(user['userImage'])
+                                          : const AssetImage('assets/profile.png') as ImageProvider,
+                                      backgroundColor: Colors.white,
+                                    ),
+                                  ],
+                                ),
+                                title: Text(
+                                  '${user['userName']}',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                trailing: Text(
+                                  '포인트: ${user['userPoint']}pt',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                onTap: () {
+                                  // 클릭 시 UserDetailsPage로 이동하며 userId 전달
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          UserDetailPage(userId: user['userId']),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-              );
-            },
-          );
-        },
+                    ),
+                  ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
 }
-
 class UserDetailPage extends StatefulWidget {
   final String userId; // 랭킹에서 선택된 사용자의 userId를 전달받음
   UserDetailPage({required this.userId});
