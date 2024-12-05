@@ -1,25 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:flutter21/startexam.dart';
+import 'package:flutter21/study_goal/certification.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-void main() => runApp(Home());
+import '../mypage/study_stats.dart';
+import '../review.dart';
 
-class Home extends StatelessWidget {
-  Home({Key? key}) : super(key: key);
-
-  dynamic userName = '';
+class HomeScreen extends StatefulWidget {
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const HomeScreen(),
-    );
-  }
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class _HomeScreenState extends State<HomeScreen> {
   static const storage = FlutterSecureStorage();
+  dynamic userName = '';
+  var userImage;
+  var userPoint;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchPoint();
+    });
+  }
+
+  Future<void> fetchPoint() async {
+    var userId = await storage.read(key: 'idToken');
+    final url = Uri.parse('http://192.168.219.77:3080/profile/user-profile/${userId}');
+    try {
+      final response = await http.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> decodedData = jsonDecode(response.body);
+        setState(() {
+          userName = decodedData['user_name'];
+          userImage = decodedData['user_image'];
+          userPoint = decodedData['user_point'];
+        });
+      } else {
+        throw Exception('점수를 가져오는 데 실패했습니다.');
+      }
+    } catch (e) {
+      print('에러 발생: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,143 +68,101 @@ class HomeScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // 사용자 정보와 메뉴
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundImage: AssetImage('assets/profile.png'),
-                    ),
+                    if (userImage != null)
+                      ClipOval(
+                        child: Image.network(
+                          Uri.encodeFull(userImage!),
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                          const Text('이미지를 불러올 수 없습니다.'),
+                        ),
+                      ),
                     const SizedBox(width: 16),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          '김공부',
-                          style: TextStyle(
+                        Text(
+                          userName,
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.lightBlueAccent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: const Text('팔로우'),
-                        ),
+                        Text('${userPoint.toString()} 포인트'),
                       ],
                     ),
                   ],
                 ),
-                // 메뉴 버튼 아래 "개인정보 수정" 추가
                 Column(
                   children: [
-                    IconButton(
-                      onPressed: ()async {
-                        dynamic a = await storage.read(key:"idToken");
-                        print(a);
-                        print("메뉴 버튼 클릭됨");
-                      },
-                      icon: const Icon(Icons.menu, color: Colors.black),
-                    ),
-                    const Text(
-                      '개인정보 수정',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.black54,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,  // 아이콘과 텍스트 간 간격을 고르게 설정
+                      children: [
+                        // 첫 번째 아이콘과 텍스트
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Startexam(),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.mark_chat_read_outlined),
+                              iconSize: 40, // 아이콘 크기 키우기
+                              padding: const EdgeInsets.all(0), // 아이콘 간격 기본
+                              color: Colors.black,
+                            ),
+                            const Text(
+                              '배치고사',
+                              style: TextStyle(fontSize: 12, color: Colors.black54),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 20),
+                        // 두 번째 아이콘과 텍스트
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => WrongAnswersPage(),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.rate_review_outlined),
+                              iconSize: 40, // 아이콘 크기 키우기
+                              padding: const EdgeInsets.all(0), // 아이콘 간격 기본
+                              color: Colors.black,
+                            ),
+                            const Text(
+                              '오답정리',
+                              style: TextStyle(fontSize: 12, color: Colors.black54),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ],
-                ),
+                )
               ],
             ),
-            const SizedBox(height: 100),
-
-            // 탭 버튼 6개를 3줄로 배치
+            const SizedBox(height: 40),
             Expanded(
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildMenuButton(
-                          '학습통계 확인', Icons.bar_chart, Colors.lightBlueAccent),
-                      _buildMenuButton(
-                          '오답정리', Icons.edit, Colors.lightBlueAccent),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildMenuButton(
-                          '기출문제', Icons.grade, Colors.lightBlueAccent),
-                      _buildMenuButton(
-                          '공부시작', Icons.assignment, Colors.lightBlueAccent),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.flag),
-            label: 'Challenge',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
-            label: 'Ranking',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Schedule',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Mypage',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMenuButton(String title, IconData icon, Color color) {
-    return Container(
-      width: 130,
-      height: 90,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 28, color: Colors.black), // 아이콘 크기 조정
-            const SizedBox(height: 6),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
+              child: LearningStatsScreen(), // 학습 통계 화면을 바로 표시
             ),
           ],
         ),

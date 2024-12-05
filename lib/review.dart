@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert'; // JSON을 디코딩하려면 필요합니다.
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class WrongAnswersPage extends StatefulWidget {
-  final String userId;
-
-  WrongAnswersPage({required this.userId});
 
   @override
   _WrongAnswersPageState createState() => _WrongAnswersPageState();
@@ -19,13 +17,24 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
   bool _isLoading = true;
   String errorMessage = '';
 
+  static const storage = FlutterSecureStorage();
+  dynamic userInfo = '';
+
+  var userId;
+
   late TabController _tabController;
 
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    fetchWrongAnswers();
+
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _asyncMethod();
+    }) ;
+    // TabController 초기화
+    _tabController = TabController(length: 2, vsync: this);  // 탭의 개수에 맞게 length 설정
   }
 
   @override
@@ -35,8 +44,23 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
     super.dispose();
   }
 
+  _asyncMethod() async {
+    userId = await storage.read(key: 'idToken'); // `userId` 값을 갱신
+
+    if (userId != null) {
+      setState(() {
+        userId = userId; // 이미 갱신된 값을 `setState`로 반영
+      });
+      fetchWrongAnswers(); // 오답 데이터를 가져오는 함수 호출
+    } else {
+      print('로그인이 필요합니다.');
+    }
+  }
+
+
   Future<void> fetchWrongAnswers() async {
-    final url = Uri.parse('http://192.168.219.77:3080/review/reviews?userId=${widget.userId}'); // userId 적용
+    var userId = await storage.read(key: 'idToken');
+    final url = Uri.parse('http://192.168.219.77:3080/review/reviews?userId=$userId'); // userId 적용
 
     try {
       final response = await http.get(
@@ -85,7 +109,7 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
         body: json.encode({
           'reviewIdx': wrongAnswer['review_idx'],
           'memo': answerNote,
-          'userId': widget.userId,
+          'userId': userId,
         }),
       );
 

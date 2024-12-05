@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'model/exammodel.dart';
-
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Startexam extends StatefulWidget {
-  final String userId;
 
-  Startexam({required this.userId});
 
   @override
   _StartexamState createState() => _StartexamState();
@@ -19,6 +17,33 @@ class _StartexamState extends State<Startexam> {
   int? _selectedOption; // 사용자가 선택한 보기 인덱스
   bool _isLoading = false;
 
+  static const storage = FlutterSecureStorage();
+  dynamic userInfo = '';
+
+  var userId;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchQuestionsFromDB();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _asyncMethod();
+    }) ;
+  }
+
+  _asyncMethod() async {
+    userInfo = await storage.read(key: 'idToken');
+
+    if (userId != null) {
+      setState(() {
+        userId = userId;
+      });
+    } else {
+      print('로그인이 필요합니다.');
+    }
+  }
 
   Future<void> fetchQuestionsFromDB() async {
     final url = Uri.parse('http://192.168.219.77:3080/exam/first-exam');
@@ -59,10 +84,11 @@ class _StartexamState extends State<Startexam> {
     required String userAnswer,
     required String correctEx,
   }) async {
+    var userId = await storage.read(key: 'idToken');
     final url = Uri.parse('http://192.168.219.77:3080/exam/solving');
 
     final data = {
-      'userId': 'hello', // 전달받은 userId 사용
+      'userId': userId, // 전달받은 userId 사용
       'exIdx': exIdx,
       'userAnswer': userAnswer,
       'correctEx': correctEx,
@@ -118,11 +144,6 @@ class _StartexamState extends State<Startexam> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    fetchQuestionsFromDB(); // 초기화 시 문제를 가져옴
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -211,17 +232,19 @@ class OptionTile extends StatelessWidget {
 
 
 class ResultPage extends StatelessWidget {
+  static const storage = FlutterSecureStorage();
+  dynamic userInfo = '';
+
   Future<int> fetchPoint() async {
+    final userId = await storage.read(key: 'idToken');
     final url = Uri.parse('http://192.168.219.77:3080/exam/first-result');
-    final data = {
-      'userId': 'hello', // 전달받은 userId 사용
-    };
+
     try {
       final response = await http.post(
         url,
         headers: {
           'Content-Type': 'application/json',
-        }, body: jsonEncode(data)
+        }, body: jsonEncode({'userId': userId}),
       );
 
 
