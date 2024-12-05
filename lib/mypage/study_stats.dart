@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter21/constants.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-
 class LearningStatsScreen extends StatefulWidget {
-
   @override
   State<LearningStatsScreen> createState() => _LearningStatsScreenState();
 }
 
 class _LearningStatsScreenState extends State<LearningStatsScreen> {
-
   static const storage = FlutterSecureStorage();
   String? userId;
-
 
   @override
   void initState() {
@@ -24,9 +21,7 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _asyncMethod();
-
-    }) ;
-
+    });
   }
 
   _asyncMethod() async {
@@ -43,7 +38,6 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
     }
   }
 
-
   List<String> dates = [];
   List<int> totalStudyTimes = [];
   List<int> realStudyTimes = [];
@@ -51,11 +45,9 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
   int totalStudyTime = 0;
   String errorMessage = '';
 
-
   Future<void> fetchUserStats() async {
-    final url = Uri.parse('http://192.168.219.77:3080/profile/study-info?userId=$userId');
+    final url = Uri.parse('$baseUrl/profile/study-info?userId=$userId');
     print('UserId: $userId');
-
 
     try {
       final response = await http.get(
@@ -81,7 +73,9 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
 
         for (var item in jsonData) {
           // 각 항목의 필드가 예상한 값이 존재하는지 확인
-          if (item['date'] != null && item['total_study_time'] != null && item['real_study_time'] != null) {
+          if (item['date'] != null &&
+              item['total_study_time'] != null &&
+              item['real_study_time'] != null) {
             tempDates.add(item['date']);
             tempTotalStudyTimes.add(item['total_study_time']);
             tempRealStudyTimes.add(item['real_study_time']);
@@ -103,7 +97,7 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
           realStudyTimes = tempRealStudyTimes;
 
           //
-          int totalStudyTimeSum = totalStudyTimes.reduce((a,b) => a+b);
+          int totalStudyTimeSum = totalStudyTimes.reduce((a, b) => a + b);
 
           totalStudyTime = totalStudyTimeSum.toInt();
 
@@ -115,7 +109,8 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
 
           // 평균 순공부시간 계산 (0으로 나누지 않도록 처리)
           if (realStudyTimes.isNotEmpty) {
-            averageStudyTime = (diffStudyTimeSum / realStudyTimes.length).toInt();
+            averageStudyTime =
+                (diffStudyTimeSum / realStudyTimes.length).toInt();
           } else {
             averageStudyTime = 0;
           }
@@ -140,7 +135,7 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
         appBar: AppBar(
           title: Text('최근 5일 공부 통계'),
           centerTitle: true,
-          backgroundColor: Colors.deepPurple,
+          // backgroundColor: Colors.deepPurple,
         ),
         body: Center(
           child: Text(
@@ -165,7 +160,7 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
             // 그래프 영역
             SizedBox(height: 40),
             Container(
-              height: 400,
+              height: 350,
               child: BarChart(
                 BarChartData(
                   gridData: FlGridData(
@@ -173,7 +168,8 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
                     drawVerticalLine: false, // 세로줄 숨기기
                   ),
                   titlesData: FlTitlesData(
-                    topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles:
+                        AxisTitles(sideTitles: SideTitles(showTitles: false)),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
@@ -181,7 +177,8 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
                         interval: 1,
                         getTitlesWidget: (value, meta) {
                           final date = DateTime.parse(dates[value.toInt()]);
-                          return Text('${date.month}/${date.day}', style: TextStyle(fontSize: 12));
+                          return Text('${date.month}/${date.day}',
+                              style: TextStyle(fontSize: 12));
                         },
                       ),
                     ),
@@ -244,7 +241,9 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('평균 순공부 시간', style: TextStyle(fontSize: 18)),
-                Text('${(averageStudyTime ~/ 60)}시간 ${(averageStudyTime % 60)}분', style: TextStyle(fontSize: 18)),
+                Text(
+                    '${(averageStudyTime ~/ 60)}시간 ${(averageStudyTime % 60)}분',
+                    style: TextStyle(fontSize: 18)),
               ],
             ),
             SizedBox(height: 8),
@@ -252,7 +251,8 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('총 공부 시간', style: TextStyle(fontSize: 18)),
-                Text('${(totalStudyTime ~/ 60)}시간 ${(totalStudyTime % 60)}분', style: TextStyle(fontSize: 18)),
+                Text('${(totalStudyTime ~/ 60)}시간 ${(totalStudyTime % 60)}분',
+                    style: TextStyle(fontSize: 18)),
               ],
             ),
           ],
@@ -261,19 +261,3 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

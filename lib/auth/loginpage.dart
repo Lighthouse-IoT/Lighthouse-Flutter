@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter21/auth/joinpage.dart';
+import 'package:flutter21/constants.dart';
 import 'package:flutter21/pagecontainer.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -15,7 +16,7 @@ class _LoginpageState extends State<Loginpage> {
   final TextEditingController idCon = TextEditingController();
   final TextEditingController pwCon = TextEditingController();
   static const storage = FlutterSecureStorage();
-    dynamic userInfo = '';
+  dynamic userInfo = '';
 
   @override
   void initState() {
@@ -24,7 +25,7 @@ class _LoginpageState extends State<Loginpage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _asyncMethod();
-    }) ;
+    });
   }
 
   _asyncMethod() async {
@@ -34,13 +35,12 @@ class _LoginpageState extends State<Loginpage> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => MainScreen()),
-            (route) => false,
+        (route) => false,
       );
     } else {
       print('로그인이 필요합니다.');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +62,8 @@ class _LoginpageState extends State<Loginpage> {
                 ),
                 const SizedBox(height: 20),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: TextField(
                     decoration: InputDecoration(
                       label: const Row(
@@ -81,8 +81,8 @@ class _LoginpageState extends State<Loginpage> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: TextField(
                     decoration: const InputDecoration(
                       label: Row(
@@ -107,7 +107,7 @@ class _LoginpageState extends State<Loginpage> {
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (_) => Joinpage()),
-                              (route) => false,
+                          (route) => false,
                         );
                       },
                       child: const Text('회원가입'),
@@ -147,7 +147,7 @@ class _LoginpageState extends State<Loginpage> {
     try {
       print(id);
       Response res = await dio.post(
-        'http://192.168.219.77:3080/sign/login',
+        '$baseUrl/sign/login',
         data: {'userId': id.toString(), 'userPw': pw},
       );
 
@@ -160,7 +160,7 @@ class _LoginpageState extends State<Loginpage> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => MainScreen()),
-              (route) => false,
+          (route) => false,
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -169,7 +169,7 @@ class _LoginpageState extends State<Loginpage> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('네트워크 오류 발생: $e')),
+        SnackBar(content: Text('아이디와 비밀번호를 확인해주세요.')),
       );
     }
   }

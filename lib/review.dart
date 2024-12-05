@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter21/constants.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert'; // JSON을 디코딩하려면 필요합니다.
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class WrongAnswersPage extends StatefulWidget {
-
   @override
   _WrongAnswersPageState createState() => _WrongAnswersPageState();
 }
@@ -29,12 +29,12 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
     // TODO: implement initState
     super.initState();
 
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _asyncMethod();
-    }) ;
+    });
     // TabController 초기화
-    _tabController = TabController(length: 2, vsync: this);  // 탭의 개수에 맞게 length 설정
+    _tabController =
+        TabController(length: 2, vsync: this); // 탭의 개수에 맞게 length 설정
   }
 
   @override
@@ -57,21 +57,19 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
     }
   }
 
-
   Future<void> fetchWrongAnswers() async {
     var userId = await storage.read(key: 'idToken');
-    final url = Uri.parse('http://192.168.219.77:3080/review/reviews?userId=$userId'); // userId 적용
+    final url =
+        Uri.parse('$baseUrl/review/reviews?userId=$userId'); // userId 적용
 
     try {
       final response = await http.get(
         url,
         headers: {'Content-Type': 'application/json'},
-
       );
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = jsonDecode(response.body);
-
 
         setState(() {
           // 서버에서 받아온 데이터를 state에 저장
@@ -81,7 +79,8 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
               jsonData.where((item) => item['is_reviewed'] == 'N'));
 
           // TextEditingController는 아직 풀이를 작성하지 않은 문제 수에 맞게 생성
-          controllers = List.generate(unsolvedWrongAnswers.length, (index) => TextEditingController());
+          controllers = List.generate(
+              unsolvedWrongAnswers.length, (index) => TextEditingController());
           _isLoading = false;
         });
       } else {
@@ -99,7 +98,7 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
   }
 
   Future<void> saveWrongAnswer(int index, String answerNote) async {
-    final url = Uri.parse('http://192.168.219.77:3080/review/memo');
+    final url = Uri.parse('$baseUrl/review/memo');
     final wrongAnswer = unsolvedWrongAnswers[index];
 
     try {
@@ -146,17 +145,23 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
                 // 추가된 ex_license, ex_test, test_img 등 출력
                 Text('${wrongAnswer['ex_license'] ?? 'Not Available'}'),
                 Text('문제: ${wrongAnswer['ex_test'] ?? 'Not Available'}'),
-                if (wrongAnswer['test_img'] != null && wrongAnswer['test_img'].isNotEmpty)
+                if (wrongAnswer['test_img'] != null &&
+                    wrongAnswer['test_img'].isNotEmpty)
                   Image.network(wrongAnswer['test_img'] ?? '')
                 else
                   Container(
                     height: 10,
                   ),
-                _buildAnswerOption('1', wrongAnswer['ex1'], wrongAnswer['user_answer'], '1', wrongAnswer['correct_ex']),
-                _buildAnswerOption('2', wrongAnswer['ex2'], wrongAnswer['user_answer'], '2', wrongAnswer['correct_ex']),
-                _buildAnswerOption('3', wrongAnswer['ex3'], wrongAnswer['user_answer'], '3', wrongAnswer['correct_ex']),
-                _buildAnswerOption('4', wrongAnswer['ex4'], wrongAnswer['user_answer'], '4', wrongAnswer['correct_ex']),
-                if (wrongAnswer['review_text'] != null && wrongAnswer['review_text']!.isNotEmpty)
+                _buildAnswerOption('1', wrongAnswer['ex1'],
+                    wrongAnswer['user_answer'], '1', wrongAnswer['correct_ex']),
+                _buildAnswerOption('2', wrongAnswer['ex2'],
+                    wrongAnswer['user_answer'], '2', wrongAnswer['correct_ex']),
+                _buildAnswerOption('3', wrongAnswer['ex3'],
+                    wrongAnswer['user_answer'], '3', wrongAnswer['correct_ex']),
+                _buildAnswerOption('4', wrongAnswer['ex4'],
+                    wrongAnswer['user_answer'], '4', wrongAnswer['correct_ex']),
+                if (wrongAnswer['review_text'] != null &&
+                    wrongAnswer['review_text']!.isNotEmpty)
                   Text(
                     '오답 풀이: ${wrongAnswer['review_text']}',
                     style: TextStyle(fontSize: 16),
@@ -168,7 +173,6 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
                   ),
               ],
             ),
-
           ),
         );
       },
@@ -191,22 +195,28 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
                 // 추가된 ex_license, ex_test, test_img 등 출력
                 Text('${wrongAnswer['ex_license'] ?? '정보 없음'}'),
                 Text('문제: ${wrongAnswer['ex_test'] ?? '정보 없음'}'),
-                if (wrongAnswer['test_img'] != null && wrongAnswer['test_img'].isNotEmpty)
+                if (wrongAnswer['test_img'] != null &&
+                    wrongAnswer['test_img'].isNotEmpty)
                   Image.network(wrongAnswer['test_img'] ?? '')
                 else
                   Container(
                     height: 10,
                   ),
-                _buildAnswerOption('1', wrongAnswer['ex1'], wrongAnswer['user_answer'], '1', wrongAnswer['correct_ex']),
-                _buildAnswerOption('2', wrongAnswer['ex2'], wrongAnswer['user_answer'], '2', wrongAnswer['correct_ex']),
-                _buildAnswerOption('3', wrongAnswer['ex3'], wrongAnswer['user_answer'], '3', wrongAnswer['correct_ex']),
-                _buildAnswerOption('4', wrongAnswer['ex4'], wrongAnswer['user_answer'], '4', wrongAnswer['correct_ex']),
+                _buildAnswerOption('1', wrongAnswer['ex1'],
+                    wrongAnswer['user_answer'], '1', wrongAnswer['correct_ex']),
+                _buildAnswerOption('2', wrongAnswer['ex2'],
+                    wrongAnswer['user_answer'], '2', wrongAnswer['correct_ex']),
+                _buildAnswerOption('3', wrongAnswer['ex3'],
+                    wrongAnswer['user_answer'], '3', wrongAnswer['correct_ex']),
+                _buildAnswerOption('4', wrongAnswer['ex4'],
+                    wrongAnswer['user_answer'], '4', wrongAnswer['correct_ex']),
                 SizedBox(height: 8),
                 TextField(
                   controller: controllers[index],
                   decoration: InputDecoration(
                     labelText: '오답 정리 입력',
-                    hintText: '정답을 어떻게 풀이했는지 적어보세요.',
+                    hintText: '문제풀이에 대해 간단히 정리해보세요.',
+                    hintStyle: TextStyle(color: Colors.grey),
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -232,7 +242,8 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
     );
   }
 
-  Widget _buildAnswerOption(String optionNumber, String optionText, int? userAnswer, String correctAnswer, String correctEx) {
+  Widget _buildAnswerOption(String optionNumber, String optionText,
+      int? userAnswer, String correctAnswer, String correctEx) {
     Color answerColor;
     String answerText;
 
@@ -241,7 +252,8 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
     double optionNumberDouble = double.tryParse(optionNumber) ?? 0.0;
 
     // 사용자가 선택한 답변과 정답 비교
-    bool isUserAnswerCorrect = userAnswer != null && userAnswer == int.tryParse(optionNumber);
+    bool isUserAnswerCorrect =
+        userAnswer != null && userAnswer == int.tryParse(optionNumber);
     bool isCorrectAnswer = correctAnswerDouble == optionNumberDouble;
 
     if (isUserAnswerCorrect) {
@@ -288,16 +300,17 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
         body: _isLoading
             ? Center(child: CircularProgressIndicator())
             : errorMessage.isNotEmpty
-            ? Center(
-          child: Text(errorMessage, style: TextStyle(color: Colors.red)),
-        )
-            : TabBarView(
-          controller: _tabController,
-          children: [
-            _buildSolvedTab(),
-            _buildUnsolvedTab(),
-          ],
-        ),
+                ? Center(
+                    child:
+                        Text(errorMessage, style: TextStyle(color: Colors.red)),
+                  )
+                : TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildSolvedTab(),
+                      _buildUnsolvedTab(),
+                    ],
+                  ),
       ),
     );
   }

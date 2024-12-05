@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fl_chart/fl_chart.dart';
-
+import 'constants.dart';
 
 class RankingPage extends StatefulWidget {
   @override
@@ -14,7 +14,6 @@ class _RankingPageState extends State<RankingPage> {
   static const storage = FlutterSecureStorage();
   String? userId;
 
-
   @override
   void initState() {
     // TODO: implement initState
@@ -22,7 +21,7 @@ class _RankingPageState extends State<RankingPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _asyncMethod();
-    }) ;
+    });
     userListFuture = fetchUserList();
   }
 
@@ -42,7 +41,7 @@ class _RankingPageState extends State<RankingPage> {
 
   Future<List<Map<String, dynamic>>> fetchUserList() async {
     // 서버 URL
-    final url = Uri.parse('http://192.168.219.77:3080/ranking/best-point');
+    final url = Uri.parse('$baseUrl/ranking/best-point');
 
     try {
       final response = await http.get(url);
@@ -82,10 +81,12 @@ class _RankingPageState extends State<RankingPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white, // 앱 전체 배경색 설정
+      ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
@@ -111,88 +112,108 @@ class _RankingPageState extends State<RankingPage> {
 
             return Scaffold(
               appBar: AppBar(
-              title: Text('전체랭킹'),
-              backgroundColor: Colors.white,
-            ),
+                title: Text(
+                  '포인트 랭커',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                backgroundColor: Colors.white,
+              ),
               body: Column(
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: userList.length,
-                        padding: EdgeInsets.zero,
-                        itemBuilder: (context, index) {
-                          final user = userList[index];
-                          final rankIcon = getRankIcon(index);
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: userList.length,
+                      padding: EdgeInsets.zero,
+                      itemBuilder: (context, index) {
+                        final user = userList[index];
+                        final rankIcon = getRankIcon(index);
 
-                          return Container(
+                        return Container(
+                          margin: EdgeInsets.zero,
+                          padding: EdgeInsets.zero,
+                          child: Card(
+                            color: Colors.white,
+                            // 기본 색상만 사용 (순위별 색상 제거)
                             margin: EdgeInsets.zero,
-                            padding: EdgeInsets.zero,
-                            child: Card(
-                              color: Colors.white,
-                              // 기본 색상만 사용 (순위별 색상 제거)
-                              margin: EdgeInsets.zero,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.zero, // 모서리를 직각으로 설정
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.zero, // 모서리를 직각으로 설정
+                            ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 4,
+                                horizontal: 18,
                               ),
-                              child: ListTile(
-                                contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 15,
-                                  horizontal: 30,
-                                ),
-                                leading: Row(
-                                  mainAxisSize: MainAxisSize.min, // Row의 크기를 최소로 제한
+                              leading: Container(
+                                width: 110,
+                                child: Row(
+                                  mainAxisSize:
+                                      MainAxisSize.min, // Row의 크기를 최소로 제한
                                   children: [
-                                    Text(
-                                      rankIcon, // 이모지 아이콘 추가
-                                      style: const TextStyle(
-                                      fontSize: 24,
+                                    Expanded(
+                                      flex: 1,
+                                      child: Text(
+                                        rankIcon, // 이모지 아이콘 추가
+                                        style: const TextStyle(
+                                          fontSize: 24,
+                                        ),
                                       ),
                                     ),
-                                    Text(
-                                      '${index + 1}', // 순위 표시 (index는 0부터 시작하므로 +1)
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
+                                    Expanded(
+                                      flex: 1,
+                                      child: Text(
+                                        '${index + 1}', // 순위 표시 (index는 0부터 시작하므로 +1)
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
                                       ),
                                     ),
-                                    const SizedBox(width: 25), // 순위와 프로필 사진 사이 간격
-                                    CircleAvatar(
-                                      backgroundImage: user['userImage'].isNotEmpty
-                                          ? NetworkImage(user['userImage'])
-                                          : const AssetImage('assets/profile.png') as ImageProvider,
-                                      backgroundColor: Colors.white,
+                                    Flexible(
+                                      flex: 2,
+                                      child: CircleAvatar(
+                                        backgroundImage:
+                                            user['userImage'].isNotEmpty
+                                                ? NetworkImage(
+                                                    '${user['userImage']}?${DateTime.now().millisecondsSinceEpoch}',
+                                                  )
+                                                : const AssetImage(
+                                                        'assets/profile.png')
+                                                    as ImageProvider,
+                                        backgroundColor: Colors.white,
+                                      ),
                                     ),
                                   ],
                                 ),
-                                title: Text(
-                                  '${user['userName']}',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                trailing: Text(
-                                  '포인트: ${user['userPoint']}pt',
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                                onTap: () {
-                                  // 클릭 시 UserDetailsPage로 이동하며 userId 전달
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          UserDetailPage(userId: user['userId']),
-                                    ),
-                                  );
-                                },
                               ),
+                              title: Text(
+                                '${user['userName']}',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              trailing: Text(
+                                '${user['userPoint']}pt',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              onTap: () {
+                                // 클릭 시 UserDetailsPage로 이동하며 userId 전달
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        UserDetailPage(userId: user['userId']),
+                                  ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
-                  ],
+                  ),
+                ],
               ),
             );
           },
@@ -201,6 +222,7 @@ class _RankingPageState extends State<RankingPage> {
     );
   }
 }
+
 class UserDetailPage extends StatefulWidget {
   final String userId; // 랭킹에서 선택된 사용자의 userId를 전달받음
   UserDetailPage({required this.userId});
@@ -223,7 +245,6 @@ class _UserDetailPageState extends State<UserDetailPage>
   int averageStudyTime = 0;
   int totalStudyTime = 0;
 
-
   static const storage = FlutterSecureStorage();
 
   @override
@@ -236,9 +257,8 @@ class _UserDetailPageState extends State<UserDetailPage>
 
   Future<void> fetchUserStats() async {
     final userId = widget.userId; // 랭킹에서 전달받은 userId 사용
-    final url = Uri.parse('http://192.168.219.77:3080/profile/study-info?userId=$userId');
+    final url = Uri.parse('$baseUrl/profile/study-info?userId=$userId');
     print('UserId: $userId');
-
 
     try {
       final response = await http.get(
@@ -252,7 +272,7 @@ class _UserDetailPageState extends State<UserDetailPage>
         // 데이터가 비어 있지 않은지 확인
         if (jsonData == null || jsonData.isEmpty) {
           setState(() {
-            errorMessage = '데이터가 없습니다.';
+            errorMessage = '공부 데이터가 없습니다.';
           });
           return;
         }
@@ -264,7 +284,9 @@ class _UserDetailPageState extends State<UserDetailPage>
 
         for (var item in jsonData) {
           // 각 항목의 필드가 예상한 값이 존재하는지 확인
-          if (item['date'] != null && item['total_study_time'] != null && item['real_study_time'] != null) {
+          if (item['date'] != null &&
+              item['total_study_time'] != null &&
+              item['real_study_time'] != null) {
             tempDates.add(item['date']);
             tempTotalStudyTimes.add(item['total_study_time']);
             tempRealStudyTimes.add(item['real_study_time']);
@@ -285,8 +307,8 @@ class _UserDetailPageState extends State<UserDetailPage>
           totalStudyTimes = tempTotalStudyTimes;
           realStudyTimes = tempRealStudyTimes;
 
-          // 
-          int totalStudyTimeSum = totalStudyTimes.reduce((a,b) => a+b);
+          //
+          int totalStudyTimeSum = totalStudyTimes.reduce((a, b) => a + b);
 
           totalStudyTime = totalStudyTimeSum.toInt();
 
@@ -298,7 +320,8 @@ class _UserDetailPageState extends State<UserDetailPage>
 
           // 평균 순공부시간 계산 (0으로 나누지 않도록 처리)
           if (realStudyTimes.isNotEmpty) {
-            averageStudyTime = (diffStudyTimeSum / realStudyTimes.length).toInt();
+            averageStudyTime =
+                (diffStudyTimeSum / realStudyTimes.length).toInt();
           } else {
             averageStudyTime = 0;
           }
@@ -315,22 +338,19 @@ class _UserDetailPageState extends State<UserDetailPage>
     }
   }
 
-
   Future<void> fetchWrongAnswers() async {
     final userId = widget.userId; // 랭킹에서 전달받은 userId 사용
-    final url = Uri.parse('http://192.168.219.77:3080/review/reviews?userId=$userId');
+    final url = Uri.parse('$baseUrl/review/reviews?userId=$userId');
     print('UserId: $userId');
 
     try {
       final response = await http.get(
         url,
         headers: {'Content-Type': 'application/json'},
-
       );
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = jsonDecode(response.body);
-
         setState(() {
           solvedWrongAnswers = List<Map<String, dynamic>>.from(
               jsonData.where((item) => item['is_reviewed'] == 'Y'));
@@ -350,26 +370,30 @@ class _UserDetailPageState extends State<UserDetailPage>
     }
   }
 
-
   Widget _buildStatsTab() {
     // 데이터를 받아온 후, 리스트가 비어 있지 않은지 확인
     if (dates.isEmpty || realStudyTimes.isEmpty) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text('최근 5일 공부 통계'),
-          centerTitle: true,
-          backgroundColor: Colors.deepPurple,
+        // appBar: AppBar(
+        //   title: Text('최근 5일 공부 통계'),
+        //   centerTitle: true,
+        //   backgroundColor: Colors.deepPurple,
+        // ),
+        body: Center(
+          child: Text(
+            errorMessage.isEmpty ? '데이터 로딩 중...' : errorMessage,
+            style: TextStyle(fontSize: 18, color: Colors.grey),
+          ),
         ),
-        body: Center(child: Text(errorMessage.isEmpty ? '데이터 로딩 중...' : errorMessage)),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('최근 5일 공부 통계',),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-      ),
+      // appBar: AppBar(
+      //   title: Text('최근 5일 공부 통계',),
+      //   centerTitle: true,
+      //   backgroundColor: Colors.white,
+      // ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -381,13 +405,13 @@ class _UserDetailPageState extends State<UserDetailPage>
               height: 400,
               child: BarChart(
                 BarChartData(
-                  gridData: FlGridData(show: true,
-                  drawVerticalLine: false
-                  ),
+                  gridData: FlGridData(show: true, drawVerticalLine: false),
                   titlesData: FlTitlesData(
-                    topTitles: AxisTitles(sideTitles: SideTitles(
-                      showTitles: false,  // 왼쪽 숫자 제거
-                    ),),
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: false, // 왼쪽 숫자 제거
+                      ),
+                    ),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
@@ -396,27 +420,31 @@ class _UserDetailPageState extends State<UserDetailPage>
                         getTitlesWidget: (value, meta) {
                           // 월/일 형태로 날짜 표시
                           final date = DateTime.parse(dates[value.toInt()]);
-                          return Text('${date.month}/${date.day}', style: TextStyle(fontSize: 12));
+                          return Text('${date.month}/${date.day}',
+                              style: TextStyle(fontSize: 12));
                         },
                       ),
                     ),
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
-                        showTitles: true,  // 왼쪽에 숫자 표시
+                        showTitles: true, // 왼쪽에 숫자 표시
                         reservedSize: 50,
                         getTitlesWidget: (value, meta) {
                           if (value == meta.max) {
-                            return SizedBox.shrink();  // 가장 큰 값은 숨깁니다.
+                            return SizedBox.shrink(); // 가장 큰 값은 숨깁니다.
                           }
-                          return Text('${(value.toDouble() / 60).toStringAsFixed(1)}시간', style: TextStyle(fontSize: 12),
-                          overflow: TextOverflow.ellipsis,  // 한 줄로 표시하고, 넘치는 부분은 생략
-                          maxLines: 1); // 한 줄로 제한); // 분 단위로 표시
+                          return Text(
+                              '${(value.toDouble() / 60).toStringAsFixed(1)}시간',
+                              style: TextStyle(fontSize: 12),
+                              overflow: TextOverflow
+                                  .ellipsis, // 한 줄로 표시하고, 넘치는 부분은 생략
+                              maxLines: 1); // 한 줄로 제한); // 분 단위로 표시
                         },
                       ),
                     ),
                     rightTitles: AxisTitles(
                       sideTitles: SideTitles(
-                        showTitles: false,  // 오른쪽 숫자 제거
+                        showTitles: false, // 오른쪽 숫자 제거
                       ),
                     ),
                   ),
@@ -427,13 +455,15 @@ class _UserDetailPageState extends State<UserDetailPage>
                       barRods: [
                         // 각 barRods에 개별적으로 값을 넘기기 위해 toDouble()을 사용합니다.
                         BarChartRodData(
-                          toY: totalStudyTimes[index].toDouble(), // totalStudyTimes[index]를 toDouble()으로 변환
+                          toY: totalStudyTimes[index]
+                              .toDouble(), // totalStudyTimes[index]를 toDouble()으로 변환
                           color: Colors.blue, // 전체 공부 시간 막대 색상
                           width: 12,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         BarChartRodData(
-                          toY: realStudyTimes[index].toDouble(), // realStudyTimes[index]를 toDouble()으로 변환
+                          toY: realStudyTimes[index]
+                              .toDouble(), // realStudyTimes[index]를 toDouble()으로 변환
                           color: Colors.green, // 순공부 시간 막대 색상
                           width: 12,
                           borderRadius: BorderRadius.circular(4),
@@ -459,7 +489,9 @@ class _UserDetailPageState extends State<UserDetailPage>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('평균 순공부 시간', style: TextStyle(fontSize: 18)),
-                Text('${(averageStudyTime ~/ 60)}시간 ${(averageStudyTime % 60)}분', style: TextStyle(fontSize: 18)),
+                Text(
+                    '${(averageStudyTime ~/ 60)}시간 ${(averageStudyTime % 60)}분',
+                    style: TextStyle(fontSize: 18)),
               ],
             ),
             SizedBox(height: 8),
@@ -467,7 +499,8 @@ class _UserDetailPageState extends State<UserDetailPage>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('총 공부 시간', style: TextStyle(fontSize: 18)),
-                Text('${(totalStudyTime ~/ 60)}시간 ${(totalStudyTime % 60)}분', style: TextStyle(fontSize: 18)),
+                Text('${(totalStudyTime ~/ 60)}시간 ${(totalStudyTime % 60)}분',
+                    style: TextStyle(fontSize: 18)),
               ],
             ),
           ],
@@ -476,14 +509,12 @@ class _UserDetailPageState extends State<UserDetailPage>
     );
   }
 
-
-
   Widget _buildWrongAnswersTab() {
     // 오답 문제가 없을 때 처리
     if (solvedWrongAnswers.isEmpty) {
       return Center(
         child: Text(
-          '오답 문제가 없습니다.',
+          '작성된 오답노트가 없습니다',
           style: TextStyle(fontSize: 18, color: Colors.grey),
         ),
       );
@@ -503,21 +534,30 @@ class _UserDetailPageState extends State<UserDetailPage>
               children: [
                 Text('${wrongAnswer['ex_license'] ?? 'Not Available'}'),
                 Text('문제: ${wrongAnswer['ex_test'] ?? 'Not Available'}'),
-                if (wrongAnswer['test_img'] != null && wrongAnswer['test_img'].isNotEmpty)
+                if (wrongAnswer['test_img'] != null &&
+                    wrongAnswer['test_img'].isNotEmpty)
                   Image.network(wrongAnswer['test_img'] ?? '')
                 else
                   Container(height: 10),
-                _buildAnswerOption('1', wrongAnswer['ex1'], wrongAnswer['user_answer'], '1', wrongAnswer['correct_ex']),
-                _buildAnswerOption('2', wrongAnswer['ex2'], wrongAnswer['user_answer'], '2', wrongAnswer['correct_ex']),
-                _buildAnswerOption('3', wrongAnswer['ex3'], wrongAnswer['user_answer'], '3', wrongAnswer['correct_ex']),
-                _buildAnswerOption('4', wrongAnswer['ex4'], wrongAnswer['user_answer'], '4', wrongAnswer['correct_ex']),
+                _buildAnswerOption('1', wrongAnswer['ex1'],
+                    wrongAnswer['user_answer'], '1', wrongAnswer['correct_ex']),
+                _buildAnswerOption('2', wrongAnswer['ex2'],
+                    wrongAnswer['user_answer'], '2', wrongAnswer['correct_ex']),
+                _buildAnswerOption('3', wrongAnswer['ex3'],
+                    wrongAnswer['user_answer'], '3', wrongAnswer['correct_ex']),
+                _buildAnswerOption('4', wrongAnswer['ex4'],
+                    wrongAnswer['user_answer'], '4', wrongAnswer['correct_ex']),
                 // review_text가 없으면 '오답 풀이가 없습니다'라는 메시지 표시
                 Text(
-                  wrongAnswer.containsKey('review_text') && (wrongAnswer['review_text'] != null && wrongAnswer['review_text'].isNotEmpty)
+                  wrongAnswer.containsKey('review_text') &&
+                          (wrongAnswer['review_text'] != null &&
+                              wrongAnswer['review_text'].isNotEmpty)
                       ? '오답 풀이: ${wrongAnswer['review_text']}'
                       : '오답 풀이가 없습니다.',
                   style: TextStyle(
-                    color: (wrongAnswer.containsKey('review_text') && (wrongAnswer['review_text'] != null && wrongAnswer['review_text'].isNotEmpty))
+                    color: (wrongAnswer.containsKey('review_text') &&
+                            (wrongAnswer['review_text'] != null &&
+                                wrongAnswer['review_text'].isNotEmpty))
                         ? Colors.black
                         : Colors.grey,
                     fontSize: 16,
@@ -531,14 +571,16 @@ class _UserDetailPageState extends State<UserDetailPage>
     );
   }
 
-  Widget _buildAnswerOption(String optionNumber, String optionText, int? userAnswer, String correctAnswer, String correctEx) {
+  Widget _buildAnswerOption(String optionNumber, String optionText,
+      int? userAnswer, String correctAnswer, String correctEx) {
     Color answerColor;
     String answerText;
 
     double correctAnswerDouble = double.tryParse(correctEx) ?? 0.0;
     double optionNumberDouble = double.tryParse(optionNumber) ?? 0.0;
 
-    bool isUserAnswerCorrect = userAnswer != null && userAnswer == int.tryParse(optionNumber);
+    bool isUserAnswerCorrect =
+        userAnswer != null && userAnswer == int.tryParse(optionNumber);
     bool isCorrectAnswer = correctAnswerDouble == optionNumberDouble;
 
     if (isUserAnswerCorrect) {
@@ -554,7 +596,8 @@ class _UserDetailPageState extends State<UserDetailPage>
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Text(answerText, style: TextStyle(color: answerColor, fontSize: 16)),
+      child:
+          Text(answerText, style: TextStyle(color: answerColor, fontSize: 16)),
     );
   }
 
@@ -580,14 +623,16 @@ class _UserDetailPageState extends State<UserDetailPage>
           _buildStatsTab(),
           _isLoading
               ? Center(child: CircularProgressIndicator())
-              : errorMessage.isNotEmpty
-              ? Center(child: Text(errorMessage, style: TextStyle(color: Colors.red)))
+              // : errorMessage.isNotEmpty
+              //     ? Center(
+              //         child: Text(
+              //           errorMessage,
+              //           style: TextStyle(color: Colors.red),
+              //         ),
+              //       )
               : _buildWrongAnswersTab(),
         ],
       ),
     );
   }
 }
-
-
-
