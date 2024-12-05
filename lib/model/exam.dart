@@ -1,6 +1,8 @@
 import 'dart:convert'; // JSON 인코딩/디코딩
 import 'package:flutter/material.dart';
 import 'package:flutter21/auth/home.dart';
+import 'package:flutter21/constants.dart';
+import 'package:flutter21/pagecontainer.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter21/model/exammodel.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -27,7 +29,7 @@ class _QuestionScreenState extends State<Exam> {
     print(widget.keyword);
     print(widget.subjects);
     final url = Uri.parse(
-        'http://192.168.219.77:3080/exam/recommended-exams?q=${widget.keyword}&section=${widget.subjects}');
+        '$baseUrl/exam/recommended-exams?q=${widget.keyword}&section=${widget.subjects}');
 
     try {
       final response = await http.get(url, headers: {
@@ -38,8 +40,7 @@ class _QuestionScreenState extends State<Exam> {
         final List<dynamic> jsonData = jsonDecode(response.body);
 
         setState(() {
-          _examItems =
-              jsonData.map((item) => ExamItem.fromJson(item)).toList();
+          _examItems = jsonData.map((item) => ExamItem.fromJson(item)).toList();
         });
       } else {
         print('문제 가져오기 실패: ${response.statusCode}');
@@ -61,7 +62,7 @@ class _QuestionScreenState extends State<Exam> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _asyncMethod();
-    }) ;
+    });
     fetchQuestionsFromDB();
   }
 
@@ -77,7 +78,6 @@ class _QuestionScreenState extends State<Exam> {
     }
   }
 
-
   // 사용자 답변 데이터를 서버로 전송하는 함수
   Future<void> submitAnswer({
     required String exIdx,
@@ -85,7 +85,7 @@ class _QuestionScreenState extends State<Exam> {
     required String correctEx,
   }) async {
     // var userId = await storage.read(key: 'idToken');
-    final url = Uri.parse('http://192.168.219.77:3080/exam/solving');
+    final url = Uri.parse('$baseUrl/exam/solving');
 
     //
     final data = {
@@ -139,18 +139,14 @@ class _QuestionScreenState extends State<Exam> {
       // TODO: 여기 경로 살려야됨
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-            builder: (context) => ResultPage()
-        ),
-          (route) => false,
+        MaterialPageRoute(builder: (context) => ResultPage()),
+        (route) => false,
       );
       // ScaffoldMessenger.of(context).showSnackBar(
       //   SnackBar(content: Text('모든 문제를 완료했습니다.')),
       // );
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -246,16 +242,16 @@ class ResultPage extends StatelessWidget {
 
   Future<int> fetchPoint() async {
     final userId = await storage.read(key: 'idToken');
-    final url = Uri.parse('http://192.168.219.77:3080/exam/result');
+    final url = Uri.parse('$baseUrl/exam/result');
 
     try {
       final response = await http.post(
         url,
         headers: {
           'Content-Type': 'application/json',
-        }, body: jsonEncode({'userId': userId}),
+        },
+        body: jsonEncode({'userId': userId}),
       );
-
 
       // 응답 상태 코드 출력
       print('HTTP 상태 코드: ${response.statusCode}');
@@ -300,25 +296,26 @@ class ResultPage extends StatelessWidget {
             // 데이터가 성공적으로 로드되었을 때
             return Center(
               child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  '획득한 점수: ${snapshot.data}',
-                  style: const TextStyle(fontSize: 24),
-                ),
-                const SizedBox(height: 20), // 간격 추가
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomeScreen()), // 홈 화면으로 이동
-                          (route) => false,
-                    );
-                  },
-                  child: const Text('홈으로 가기'),
-                ),
-              ],
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    '획득한 점수: ${snapshot.data}',
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                  const SizedBox(height: 20), // 간격 추가
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MainScreen()), // 홈 화면으로 이동
+                        (route) => false,
+                      );
+                    },
+                    child: const Text('홈으로 가기'),
+                  ),
+                ],
               ),
             );
           } else {

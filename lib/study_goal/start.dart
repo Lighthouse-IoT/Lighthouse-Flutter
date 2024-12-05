@@ -11,7 +11,7 @@ class StartScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'E-ROOM',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black, fontSize: 24),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -21,12 +21,12 @@ class StartScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-           ElevatedButton(
+            ElevatedButton(
               onPressed: () {
                 // timer.dart로 화면 이동
                 Navigator.push(
                   context,
-                    MaterialPageRoute(
+                  MaterialPageRoute(
                     builder: (context) => const Certification(), // 타이머 화면
                   ),
                 );

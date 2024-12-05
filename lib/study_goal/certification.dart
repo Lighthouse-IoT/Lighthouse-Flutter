@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter21/auth/home.dart';
+import 'package:flutter21/constants.dart';
 import 'package:flutter21/model/exam.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 
 void main() => runApp(const Certification());
 
@@ -82,14 +85,21 @@ class TimerScreen extends StatefulWidget {
 
 class _TimerScreenState extends State<TimerScreen> {
   late Timer _timer;
+  late Timer _studyInfoTimer;
   int _seconds = 0;
   bool isStudyEnded = false; // 공부 종료 상태
+  dynamic userInfo = '';
+  static const storage = FlutterSecureStorage();
   final TextEditingController _keywordController = TextEditingController();
+
   late Map<String, bool> _selectedSubjects;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _asyncMethod();
+    });
     _selectedSubjects = {
       for (var subject in widget.subjects) subject: false
     }; // 초기화
@@ -99,8 +109,70 @@ class _TimerScreenState extends State<TimerScreen> {
   @override
   void dispose() {
     _timer.cancel();
+    _studyInfoTimer.cancel();
     _keywordController.dispose(); // 컨트롤러 해제
     super.dispose();
+  }
+
+  _asyncMethod() async {
+    userInfo = await storage.read(key: 'idToken');
+    _startStudy();
+    _startStudyInfo();
+  }
+
+  Future<void> startStudyServer() async {
+    final url = Uri.parse("$baseUrl/study/start-study");
+
+    try {
+      final response = await http.post(url, body: {"userId": userInfo});
+
+      if (response.statusCode == 200) {
+        print(response.body);
+      }
+    } catch (e) {
+      print(e);
+      print("ERROR!!!!");
+    }
+  }
+
+  Future<void> stopStudyServer() async {
+    final url = Uri.parse("$baseUrl/study/end-study");
+
+    try {
+      final response = await http.post(url, body: {"userId": userInfo});
+
+      if (response.statusCode == 200) {
+        print(response.body);
+      }
+    } catch (e) {
+      print(e);
+      print("END ERROR!!!!");
+    }
+  }
+
+  Future<void> startStudyJetson() async {
+    final url = Uri.parse("$baseUrl/study/start-detect");
+
+    try {
+      final response = await http.post(url, body: {"userId": userInfo});
+
+      if (response.statusCode == 200) {
+        print("startStudyJetson");
+        print(response.body);
+      }
+    } catch (e) {
+      print("JETSON ERROR!!!!");
+    }
+  }
+
+  void _startStudy() {
+    startStudyServer();
+  }
+
+  void _startStudyInfo() {
+    _studyInfoTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
+      startStudyJetson();
+    });
   }
 
   void _startTimer() {
@@ -116,6 +188,8 @@ class _TimerScreenState extends State<TimerScreen> {
       isStudyEnded = true; // 공부 종료 상태 변경
     });
     _timer.cancel();
+    _studyInfoTimer.cancel();
+    stopStudyServer();
   }
 
   void _searchKeyword() {
@@ -137,9 +211,10 @@ class _TimerScreenState extends State<TimerScreen> {
     });
 
     // 저장한 인덱스 int -> string
-    List<String> selectedSubjectNum = trueIndices.map((i) => (i + 1).toString()).toList();
-    String realStringSubject = '[${selectedSubjectNum.map((e) => '"$e"').join(", ")}]';
-
+    List<String> selectedSubjectNum =
+        trueIndices.map((i) => (i + 1).toString()).toList();
+    String realStringSubject =
+        '[${selectedSubjectNum.map((e) => '"$e"').join(", ")}]';
 
     final keyword = _keywordController.text.trim();
     print(keyword);
@@ -160,9 +235,9 @@ class _TimerScreenState extends State<TimerScreen> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (context) => Exam(keyword: keyword, subjects: realStringSubject)
-      ),
-        (route) => false,
+          builder: (context) =>
+              Exam(keyword: keyword, subjects: realStringSubject)),
+      (route) => false,
     );
   }
 
@@ -178,71 +253,70 @@ class _TimerScreenState extends State<TimerScreen> {
       body: Center(
         child: isStudyEnded
             ? SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                '공부 종료! 과목을 선택하세요:',
-                style:
-                TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              ..._selectedSubjects.keys.map((subject) {
-                return CheckboxListTile(
-                  title: Text(subject),
-                  value: _selectedSubjects[subject],
-                  onChanged: (bool? value) {
-                    setState(() {
-                      _selectedSubjects[subject] = value ?? false;
-                    });
-                  },
-                );
-              }).toList(),
-              const Divider(height: 40, thickness: 1),
-              const Text(
-                '키워드를 입력하고 검색하세요:',
-                style:
-                TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: TextField(
-                  controller: _keywordController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: '키워드 입력',
-                  ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      '공부 종료! 과목을 선택하세요:',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 20),
+                    ..._selectedSubjects.keys.map((subject) {
+                      return CheckboxListTile(
+                        title: Text(subject),
+                        value: _selectedSubjects[subject],
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _selectedSubjects[subject] = value ?? false;
+                          });
+                        },
+                      );
+                    }).toList(),
+                    const Divider(height: 40, thickness: 1),
+                    const Text(
+                      '키워드를 입력하고 검색하세요:',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: TextField(
+                        controller: _keywordController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: '키워드 입력',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: _searchKeyword,
+                      child: const Text('검색'),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _searchKeyword,
-                child: const Text('검색'),
-              ),
-            ],
-          ),
-        )
+              )
             : Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.access_time,
-                size: 60, color: Colors.black54),
-            const SizedBox(height: 20),
-            Text(
-              _formatTime(_seconds),
-              style: const TextStyle(
-                  fontSize: 36, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _stopStudy,
-              child: const Text('공부 종료'),
-            ),
-          ],
-        ),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.access_time,
+                      size: 60, color: Colors.black54),
+                  const SizedBox(height: 20),
+                  Text(
+                    _formatTime(_seconds),
+                    style: const TextStyle(
+                        fontSize: 36, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _stopStudy,
+                    child: const Text('공부 종료'),
+                  ),
+                ],
+              ),
       ),
     );
-
   }
 }

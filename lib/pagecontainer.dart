@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter21/ranking.dart';
-import 'package:flutter21/review.dart';
-import 'package:flutter21/startexam.dart';
 import 'package:flutter21/study_goal/start.dart';
-import 'package:flutter21/study_goal/subjectb.dart';
 import 'auth/home.dart';
-import 'model/exam.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -19,14 +15,14 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _pages = [
     StartScreen(),
     HomeScreen(),
-    RankingPage()
-
+    RankingPage(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_currentIndex], // 현재 선택된 탭에 해당하는 화면 표시
+      backgroundColor: Colors.white,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {

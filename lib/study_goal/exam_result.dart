@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter21/auth/home.dart';
+import 'package:flutter21/constants.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ResultPage extends StatelessWidget {
   Future<int> fetchPoint() async {
-    final url = Uri.parse('http://192.168.219.77:3080/exam/result');
+    final url = Uri.parse('$baseUrl/exam/result');
     final data = {
       'userId': 'hello', // 전달받은 userId 사용
     };
     try {
-      final response = await http.post(
-          url,
+      final response = await http.post(url,
           headers: {
             'Content-Type': 'application/json',
-          }, body: jsonEncode(data)
-      );
-
+          },
+          body: jsonEncode(data));
 
       // 응답 상태 코드 출력
       print('HTTP 상태 코드: ${response.statusCode}');
@@ -66,15 +65,15 @@ class ResultPage extends StatelessWidget {
                     style: const TextStyle(fontSize: 24),
                   ),
                 ),
-                ElevatedButton(onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => HomeScreen()
-                    ),
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()),
                         (route) => false,
-                  );
-                }, child: Text("확인"))
+                      );
+                    },
+                    child: Text("확인"))
               ],
             );
           } else {

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter21/constants.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'model/exammodel.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Startexam extends StatefulWidget {
-
-
   @override
   _StartexamState createState() => _StartexamState();
 }
@@ -30,7 +29,7 @@ class _StartexamState extends State<Startexam> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _asyncMethod();
-    }) ;
+    });
   }
 
   _asyncMethod() async {
@@ -46,7 +45,7 @@ class _StartexamState extends State<Startexam> {
   }
 
   Future<void> fetchQuestionsFromDB() async {
-    final url = Uri.parse('http://192.168.219.77:3080/exam/first-exam');
+    final url = Uri.parse('$baseUrl/exam/first-exam');
     try {
       final response = await http.get(url, headers: {
         'Content-Type': 'application/json',
@@ -78,6 +77,7 @@ class _StartexamState extends State<Startexam> {
       });
     }
   }
+
   // 사용자 답변 데이터를 서버로 전송하는 함수
   Future<void> submitAnswer({
     required String exIdx,
@@ -85,7 +85,7 @@ class _StartexamState extends State<Startexam> {
     required String correctEx,
   }) async {
     var userId = await storage.read(key: 'idToken');
-    final url = Uri.parse('http://192.168.219.77:3080/exam/solving');
+    final url = Uri.parse('$baseUrl/exam/solving');
 
     final data = {
       'userId': userId, // 전달받은 userId 사용
@@ -110,6 +110,7 @@ class _StartexamState extends State<Startexam> {
       print('정답 제출 중 에러: $e');
     }
   }
+
 // 다음 문제로 이동
   void nextQuestion() {
     if (_selectedOption == null) {
@@ -137,13 +138,11 @@ class _StartexamState extends State<Startexam> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ResultPage(
-          ),
+          builder: (context) => ResultPage(),
         ),
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +155,8 @@ class _StartexamState extends State<Startexam> {
     if (_examItems.isEmpty) {
       return Scaffold(
         body: Center(
-          child: Text('문제를 불러오지 못했습니다.', style: TextStyle(fontSize: 18, color: Colors.red)),
+          child: Text('문제를 불러오지 못했습니다.',
+              style: TextStyle(fontSize: 18, color: Colors.red)),
         ),
       );
     }
@@ -173,9 +173,14 @@ class _StartexamState extends State<Startexam> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("문제 ${_currentQuestionIndex + 1}/${_examItems.length}", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.indigo)),
+            Text("문제 ${_currentQuestionIndex + 1}/${_examItems.length}",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.indigo)),
             SizedBox(height: 20),
-            Text(currentQuestion.exTest, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(currentQuestion.exTest,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             SizedBox(height: 20),
             if (currentQuestion.testImg != null)
               Padding(
@@ -186,18 +191,31 @@ class _StartexamState extends State<Startexam> {
                       Text('이미지를 불러올 수 없습니다.'),
                 ),
               ),
-            OptionTile(optionText: currentQuestion.ex1, isSelected: _selectedOption == 0, onTap: () => setState(() => _selectedOption = 0)),
+            OptionTile(
+                optionText: currentQuestion.ex1,
+                isSelected: _selectedOption == 0,
+                onTap: () => setState(() => _selectedOption = 0)),
             SizedBox(height: 10),
-            OptionTile(optionText: currentQuestion.ex2, isSelected: _selectedOption == 1, onTap: () => setState(() => _selectedOption = 1)),
+            OptionTile(
+                optionText: currentQuestion.ex2,
+                isSelected: _selectedOption == 1,
+                onTap: () => setState(() => _selectedOption = 1)),
             SizedBox(height: 10),
-            OptionTile(optionText: currentQuestion.ex3, isSelected: _selectedOption == 2, onTap: () => setState(() => _selectedOption = 2)),
+            OptionTile(
+                optionText: currentQuestion.ex3,
+                isSelected: _selectedOption == 2,
+                onTap: () => setState(() => _selectedOption = 2)),
             SizedBox(height: 10),
-            OptionTile(optionText: currentQuestion.ex4, isSelected: _selectedOption == 3, onTap: () => setState(() => _selectedOption = 3)),
+            OptionTile(
+                optionText: currentQuestion.ex4,
+                isSelected: _selectedOption == 3,
+                onTap: () => setState(() => _selectedOption = 3)),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: nextQuestion,
               style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo),
-              child: Text("다음으로", style: TextStyle(fontSize: 18, color: Colors.white)),
+              child: Text("다음으로",
+                  style: TextStyle(fontSize: 18, color: Colors.white)),
             ),
           ],
         ),
@@ -211,7 +229,10 @@ class OptionTile extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  OptionTile({required this.optionText, required this.isSelected, required this.onTap});
+  OptionTile(
+      {required this.optionText,
+      required this.isSelected,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -230,23 +251,22 @@ class OptionTile extends StatelessWidget {
   }
 }
 
-
 class ResultPage extends StatelessWidget {
   static const storage = FlutterSecureStorage();
   dynamic userInfo = '';
 
   Future<int> fetchPoint() async {
     final userId = await storage.read(key: 'idToken');
-    final url = Uri.parse('http://192.168.219.77:3080/exam/first-result');
+    final url = Uri.parse('$baseUrl/exam/first-result');
 
     try {
       final response = await http.post(
         url,
         headers: {
           'Content-Type': 'application/json',
-        }, body: jsonEncode({'userId': userId}),
+        },
+        body: jsonEncode({'userId': userId}),
       );
-
 
       // 응답 상태 코드 출력
       print('HTTP 상태 코드: ${response.statusCode}');
@@ -289,7 +309,7 @@ class ResultPage extends StatelessWidget {
           } else if (snapshot.hasData) {
             return Center(
               child: Text(
-                  '획득한 점수: ${(snapshot.data)}',
+                '획득한 점수: ${(snapshot.data)}',
                 style: const TextStyle(fontSize: 24),
               ),
             );

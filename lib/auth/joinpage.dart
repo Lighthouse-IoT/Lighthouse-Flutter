@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter21/auth/loginpage.dart';
+import 'package:flutter21/constants.dart';
 
 class Joinpage extends StatelessWidget {
   // 컨트롤러를 클래스 멤버 변수로 선언
@@ -22,7 +23,7 @@ class Joinpage extends StatelessWidget {
 
     try {
       Response res = await dio.post(
-        'http://192.168.219.77:3080/sign/join',
+        '$baseUrl/sign/join',
         data: {
           'userId': idCon.text,
           'userPw': pwCon.text,
@@ -40,7 +41,7 @@ class Joinpage extends StatelessWidget {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => Loginpage()),
-              (route) => false,
+          (route) => false,
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -109,7 +110,7 @@ class Joinpage extends StatelessWidget {
                       );
                       if (selectedDate != null) {
                         birthDateCon.text =
-                        "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}";
+                            "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}";
                       }
                     },
                     child: AbsorbPointer(
