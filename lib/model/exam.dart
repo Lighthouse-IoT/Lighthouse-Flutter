@@ -212,6 +212,7 @@ class _QuestionScreenState extends State<Exam> {
                         _selectedOption = value;
                       });
                     },
+                    activeColor: Color(0xFFF26B0F),
                   );
                 },
               ),
@@ -220,12 +221,14 @@ class _QuestionScreenState extends State<Exam> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFF26B0F),),
                   onPressed: nextQuestion,
-                  child: Text('이전 문제'),
+                  child: Text('이전 문제',style: TextStyle(color: Colors.white),),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFF26B0F),),
                   onPressed: nextQuestion,
-                  child: Text('다음 문제'),
+                  child: Text('다음 문제',style: TextStyle(color: Colors.white),),
                 ),
               ],
             ),
@@ -305,6 +308,7 @@ class ResultPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20), // 간격 추가
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFF26B0F),),
                     onPressed: () {
                       Navigator.pushAndRemoveUntil(
                         context,
@@ -313,7 +317,7 @@ class ResultPage extends StatelessWidget {
                         (route) => false,
                       );
                     },
-                    child: const Text('홈으로 가기'),
+                    child: const Text('홈으로 가기',style: TextStyle(color: Colors.white),),
                   ),
                 ],
               ),

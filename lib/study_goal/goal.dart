@@ -51,7 +51,7 @@ class StudyGoalScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const Certification(),
+                    builder: (context) => const CertificationSelectionScreen(),
                   ),
                 );
               },

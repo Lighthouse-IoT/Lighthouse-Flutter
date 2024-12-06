@@ -81,18 +81,14 @@ class _RankingPageState extends State<RankingPage> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white, // 앱 전체 배경색 설정
-      ),
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: const Text(
             'E-ROOM',
-            style: TextStyle(color: Colors.black, fontSize: 24),
+            style: TextStyle(color: Colors.black, fontSize: 24,fontWeight: FontWeight.w700),
           ),
           centerTitle: true,
           backgroundColor: Colors.white,
@@ -114,9 +110,8 @@ class _RankingPageState extends State<RankingPage> {
               appBar: AppBar(
                 title: Text(
                   '포인트 랭커',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold,),
                 ),
-                backgroundColor: Colors.white,
               ),
               body: Column(
                 children: [
@@ -140,8 +135,8 @@ class _RankingPageState extends State<RankingPage> {
                             ),
                             child: ListTile(
                               contentPadding: const EdgeInsets.symmetric(
-                                vertical: 4,
-                                horizontal: 18,
+                                vertical: 8,
+                                horizontal: 24,
                               ),
                               leading: Container(
                                 width: 110,
@@ -218,8 +213,7 @@ class _RankingPageState extends State<RankingPage> {
             );
           },
         ),
-      ),
-    );
+      );
   }
 }
 
@@ -605,12 +599,13 @@ class _UserDetailPageState extends State<UserDetailPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Text("사용자 정보"),
         bottom: TabBar(
           controller: _tabController,
           labelColor: Color(0xFF3f51b5), // 눌린 탭의 텍스트 색
           unselectedLabelColor: Colors.grey, // 눌리지 않은 탭의 텍스트 색
-          indicatorColor: Color(0xFF3f51b5),
+          indicatorColor: Colors.blue,
           tabs: [
             Tab(text: '통계'),
             Tab(text: '오답 노트'),

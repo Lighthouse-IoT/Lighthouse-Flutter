@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import '../mypage/study_stats.dart';
 import '../review.dart';
 
+
 class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -47,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final uri = Uri.parse(
           "$baseUrl/profile/upload-image?directory=profile&userId=$userId"); // 서버 URL
       final request = http.MultipartRequest('POST', uri)
-        ..fields['userId'] = "tester"
+        ..fields['userId'] = userId!
         ..files.add(await http.MultipartFile.fromPath('image', image.path));
 
       final response = await request.send();
@@ -102,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text(
           'E-ROOM',
-          style: TextStyle(color: Colors.black, fontSize: 24),
+          style: TextStyle(color: Colors.black, fontSize: 24,fontWeight: FontWeight.w700 ),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -141,77 +142,81 @@ class _HomeScreenState extends State<HomeScreen> {
                           userName,
                           style: const TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
-                        Text('${userPoint.toString()} 포인트'),
+                        Text('${userPoint.toString()} 포인트',style: TextStyle(fontWeight: FontWeight.w700),),
                       ],
                     ),
                   ],
                 ),
-                Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment
-                          .spaceEvenly, // 아이콘과 텍스트 간 간격을 고르게 설정
-                      children: [
-                        // 첫 번째 아이콘과 텍스트
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Startexam(),
-                                  ),
-                                );
-                              },
-                              icon: const Icon(Icons.mark_chat_read_outlined),
-                              iconSize: 40, // 아이콘 크기 키우기
-                              padding: const EdgeInsets.all(0), // 아이콘 간격 기본
-                              color: Colors.black,
-                            ),
-                            const Text(
-                              '배치고사',
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.black54),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 20),
-                        // 두 번째 아이콘과 텍스트
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => WrongAnswersPage(),
-                                  ),
-                                );
-                              },
-                              icon: const Icon(Icons.rate_review_outlined),
-                              iconSize: 40, // 아이콘 크기 키우기
-                              padding: const EdgeInsets.all(0), // 아이콘 간격 기본
-                              color: Colors.black,
-                            ),
-                            const Text(
-                              '오답정리',
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.black54),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                )
+                // Column(
+                //   children: [
+                //     Row(
+                //       mainAxisAlignment: MainAxisAlignment
+                //           .spaceEvenly, // 아이콘과 텍스트 간 간격을 고르게 설정
+                //       children: [
+                //         // 첫 번째 아이콘과 텍스트
+                //         // Column(
+                //         //   mainAxisAlignment: MainAxisAlignment.center,
+                //         //   children: [
+                //         //     // IconButton(
+                //         //     //   onPressed: () {
+                //         //     //     Navigator.push(
+                //         //     //       context,
+                //         //     //       MaterialPageRoute(
+                //         //     //         builder: (context) => Startexam(),
+                //         //     //       ),
+                //         //     //     );
+                //         //     //   },
+                //         //     //   icon: const Icon(Icons.mark_chat_read_outlined),
+                //         //     //   iconSize: 40, // 아이콘 크기 키우기
+                //         //     //   padding: const EdgeInsets.all(0), // 아이콘 간격 기본
+                //         //     //   color: Colors.black,
+                //         //     // ),
+                //         //     // const Text(
+                //         //     //   '배치고사',
+                //         //     //   style: TextStyle(
+                //         //     //       fontSize: 12, color: Colors.black54,
+                //         //     //       fontWeight: FontWeight.w700),
+                //         //     // ),
+                //         //   ],
+                //         // ),
+                //         const SizedBox(width: 20),
+                //         // 두 번째 아이콘과 텍스트
+                //         Column(
+                //           mainAxisAlignment: MainAxisAlignment.center,
+                //           children: [
+                //             IconButton(
+                //               onPressed: () {
+                //                 Navigator.push(
+                //                   context,
+                //                   MaterialPageRoute(
+                //                     builder: (context) => WrongAnswersPage(),
+                //                   ),
+                //                 );
+                //               },
+                //               icon: const Icon(Icons.rate_review_outlined),
+                //               iconSize: 40, // 아이콘 크기 키우기
+                //               padding: const EdgeInsets.all(0), // 아이콘 간격 기본
+                //               color: Colors.black,
+                //             ),
+                //             const Text(
+                //               '오답정리',
+                //               style: TextStyle(
+                //                   fontSize: 12, color: Colors.black54,
+                //                   fontWeight: FontWeight.w700),
+                //             ),
+                //           ],
+                //         ),
+                //       ],
+                //     ),
+                //   ],
+                // )
               ],
             ),
+            SizedBox(height: 20),
+
             // const SizedBox(height: 25),
             Expanded(
               child: LearningStatsScreen(), // 학습 통계 화면을 바로 표시

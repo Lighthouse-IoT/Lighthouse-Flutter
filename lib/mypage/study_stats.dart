@@ -133,14 +133,17 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
     if (dates.isEmpty || realStudyTimes.isEmpty) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('최근 5일 공부 통계'),
+          title: Text('최근 5일 공부 통계',
+          style: TextStyle(
+              fontWeight: FontWeight.w700
+          ),),
           centerTitle: true,
           // backgroundColor: Colors.deepPurple,
         ),
         body: Center(
           child: Text(
             errorMessage.isEmpty ? '데이터 로딩 중...' : errorMessage,
-            style: TextStyle(fontSize: 16, color: Colors.red),
+            style: TextStyle(fontSize: 16, color: Colors.red,fontWeight: FontWeight.w700),
           ),
         ),
       );
@@ -148,114 +151,132 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('최근 5일 공부 통계'),
-        centerTitle: true,
+        title: Text('학습통계',style: TextStyle(fontWeight: FontWeight.w700),),
+        // centerTitle: true,
         backgroundColor: Colors.white,
+    
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 그래프 영역
-            SizedBox(height: 40),
-            Container(
-              height: 350,
-              child: BarChart(
-                BarChartData(
-                  gridData: FlGridData(
-                    show: true,
-                    drawVerticalLine: false, // 세로줄 숨기기
-                  ),
-                  titlesData: FlTitlesData(
-                    topTitles:
-                        AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 22,
-                        interval: 1,
-                        getTitlesWidget: (value, meta) {
-                          final date = DateTime.parse(dates[value.toInt()]);
-                          return Text('${date.month}/${date.day}',
-                              style: TextStyle(fontSize: 12));
-                        },
+      body: Container(
+        color: Color(0xFFFFF4EB),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+        
+              // 그래프 영역
+              SizedBox(height: 40),
+              Container(
+                height: 350,
+                child: BarChart(
+                  BarChartData(
+                    gridData: FlGridData(
+                      show: true,
+                      drawVerticalLine: false, // 세로줄 숨기기
+                    ),
+                    titlesData: FlTitlesData(
+                      topTitles:
+                          AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 22,
+                          interval: 1,
+                          getTitlesWidget: (value, meta) {
+                            final date = DateTime.parse(dates[value.toInt()]);
+                            return Text('${date.month}/${date.day}',
+                                style: TextStyle(fontSize: 12));
+                          },
+                        ),
+                      ),
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 50,
+                          getTitlesWidget: (value, meta) {
+                            if (value == meta.max) {
+                              return SizedBox.shrink(); // 가장 큰 값 숨기기
+                            }
+                            return Text(
+                              '${(value.toDouble() / 60).toStringAsFixed(1)}시간',
+                              style: TextStyle(fontSize: 12),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            );
+                          },
+                        ),
+                      ),
+                      rightTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
                       ),
                     ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 50,
-                        getTitlesWidget: (value, meta) {
-                          if (value == meta.max) {
-                            return SizedBox.shrink(); // 가장 큰 값 숨기기
-                          }
-                          return Text(
-                            '${(value.toDouble() / 60).toStringAsFixed(1)}시간',
-                            style: TextStyle(fontSize: 12),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          );
-                        },
-                      ),
-                    ),
-                    rightTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
+                    borderData: FlBorderData(show: false),
+                    barGroups: List.generate(dates.length, (index) {
+                      return BarChartGroupData(
+                        x: index,
+                        barRods: [
+                          BarChartRodData(
+                            toY: totalStudyTimes[index].toDouble(),
+                            color: Color(0xFFF26B0F),
+                            width: 12,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          BarChartRodData(
+                            toY: realStudyTimes[index].toDouble(),
+                            color: Color(0xFFFCC737),
+                            width: 12,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ],
+                        barsSpace: 6,
+                      );
+                    }),
+                      barTouchData: BarTouchData(
+                          touchTooltipData: BarTouchTooltipData(
+                              tooltipPadding: EdgeInsets.all(8), // Adjust padding
+                              // Tooltip background color
+                              getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                                final int studyMinutes = rod.toY.toInt();
+                                return BarTooltipItem(
+                                  '$studyMinutes 분',
+                                  TextStyle(color: Colors.white, fontSize: 14),
+                                );
+                        }
+                      )
+                    )
                   ),
-                  borderData: FlBorderData(show: false),
-                  barGroups: List.generate(dates.length, (index) {
-                    return BarChartGroupData(
-                      x: index,
-                      barRods: [
-                        BarChartRodData(
-                          toY: totalStudyTimes[index].toDouble(),
-                          color: Colors.blue,
-                          width: 12,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        BarChartRodData(
-                          toY: realStudyTimes[index].toDouble(),
-                          color: Colors.green,
-                          width: 12,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ],
-                      barsSpace: 6,
-                    );
-                  }),
                 ),
               ),
-            ),
-
-            // 하단 요약 정보
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Icon(Icons.timeline, size: 20),
-                Text('5일 평균 수치입니다'),
-              ],
-            ),
-            SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('평균 순공부 시간', style: TextStyle(fontSize: 18)),
-                Text(
-                    '${(averageStudyTime ~/ 60)}시간 ${(averageStudyTime % 60)}분',
-                    style: TextStyle(fontSize: 18)),
-              ],
-            ),
-            SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('총 공부 시간', style: TextStyle(fontSize: 18)),
-                Text('${(totalStudyTime ~/ 60)}시간 ${(totalStudyTime % 60)}분',
-                    style: TextStyle(fontSize: 18)),
-              ],
-            ),
-          ],
+        
+              // 하단 요약 정보
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Icon(Icons.timeline, size: 20),
+                  Text('5일 평균 수치입니다',),
+                ],
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('평균 순공부 시간', style: TextStyle(fontSize: 18,fontWeight: FontWeight.w700)),
+                  Text(
+                      '${(averageStudyTime ~/ 60)}시간 ${(averageStudyTime % 60)}분',
+                      style: TextStyle(fontSize: 18,fontWeight: FontWeight.w700)),
+                ],
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('총 공부 시간', style: TextStyle(fontSize: 18,fontWeight: FontWeight.w700)),
+                  Text('${(totalStudyTime ~/ 60)}시간 ${(totalStudyTime % 60)}분',
+                      style: TextStyle(fontSize: 18,fontWeight: FontWeight.w700)),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

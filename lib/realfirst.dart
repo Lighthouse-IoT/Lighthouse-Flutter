@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'certification.dart';
-import 'timer.dart'; // timer.dart를 import
+import 'package:flutter21/startexam.dart';
 
-class StartScreen extends StatelessWidget {
-  const StartScreen({Key? key}) : super(key: key);
+class FirstScreen extends StatelessWidget {
+  const FirstScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +39,7 @@ class StartScreen extends StatelessWidget {
             const SizedBox(height: 10),
             const Text(
               "기출문제를 풀고 실력을 점검하세요. \n"
-              "AI가 당신의 학습을 최적화합니다.\n\n",
+                  "AI가 당신의 학습을 최적화합니다.\n\n",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -57,7 +56,7 @@ class StartScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const CertificationSelectionScreen(), // 타이머 화면
+                    builder: (context) => Startexam(), // 타이머 화면
                   ),
                 );
               },
@@ -69,11 +68,11 @@ class StartScreen extends StatelessWidget {
                 ),
               ),
               child: const Text(
-                '공부시작',
+                '배치고사',
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white
                 ),
               ),
             ),

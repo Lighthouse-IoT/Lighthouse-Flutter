@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter21/constants.dart';
+import 'package:flutter21/pagecontainer.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'model/exammodel.dart';
@@ -165,8 +166,8 @@ class _StartexamState extends State<Startexam> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(currentQuestion.exLicense),
-        backgroundColor: Colors.indigo,
+        title: Text(currentQuestion.exLicense,style: TextStyle(color: Colors.white),),
+        backgroundColor: Color(0xFFF26B0F),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -177,7 +178,7 @@ class _StartexamState extends State<Startexam> {
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.indigo)),
+                    color: Color(0xFFF26B0F))),
             SizedBox(height: 20),
             Text(currentQuestion.exTest,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -213,7 +214,7 @@ class _StartexamState extends State<Startexam> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: nextQuestion,
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo),
+              style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFF26B0F)),
               child: Text("다음으로",
                   style: TextStyle(fontSize: 18, color: Colors.white)),
             ),
@@ -307,11 +308,28 @@ class ResultPage extends StatelessWidget {
               ),
             );
           } else if (snapshot.hasData) {
-            return Center(
-              child: Text(
-                '획득한 점수: ${(snapshot.data)}',
-                style: const TextStyle(fontSize: 24),
-              ),
+            return Column(
+              children: [
+                Center(
+                  child: Text(
+                    '획득한 점수: ${(snapshot.data)}',
+                    style: const TextStyle(fontSize: 24),
+                  ),
+
+                ),
+                const SizedBox(height: 20), // 간격 추가
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MainScreen()), // 홈 화면으로 이동
+                          (route) => false,
+                    );
+                  },
+                  child: const Text('홈으로 가기',style: TextStyle(color: Colors.white),),
+                ),
+              ],
             );
           } else {
             return const Center(child: Text("점수를 가져올 수 없습니다."));

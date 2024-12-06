@@ -11,14 +11,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Tab Bar Example',
       theme: ThemeData(
-        // primarySwatch: Colors.blue,
+        fontFamily: "Goyang",
+        primaryColor: Colors.white,
         scaffoldBackgroundColor: Colors.white,
         appBarTheme: AppBarTheme(
           color: Colors.white, // 앱바 색 설정
         ),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          showUnselectedLabels: true,
+          showSelectedLabels: true,
           backgroundColor: Colors.white, // 하단 네비게이션 바 색 설정
-          selectedItemColor: Colors.black87, // 선택된 아이템 색
+          selectedItemColor: Color(0xFFF26B0F), // 선택된 아이템 색
           unselectedItemColor: Colors.grey, // 선택되지 않은 아이템 색
         ),
       ),
