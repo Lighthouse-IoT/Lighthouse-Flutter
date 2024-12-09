@@ -166,7 +166,7 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
                     wrongAnswer['review_text']!.isNotEmpty)
                   Text(
                     '오답 풀이: ${wrongAnswer['review_text']}',
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                   )
                 else
                   Text(
@@ -227,7 +227,8 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
                 ),
                 SizedBox(height: 8),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFF26B0F)),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFF26B0F)),
                   onPressed: () async {
                     final answerNote = controllers[index].text.trim();
                     if (answerNote.isNotEmpty) {
@@ -238,7 +239,11 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
                       );
                     }
                   },
-                  child: Text('작성',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w700 ),),
+                  child: Text(
+                    '작성',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w700),
+                  ),
                 ),
               ],
             ),
@@ -291,7 +296,10 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("오답 노트", style: TextStyle(fontWeight: FontWeight.w700),),
+          title: const Text(
+            "오답 노트",
+            style: TextStyle(fontWeight: FontWeight.w700),
+          ),
           bottom: TabBar(
             controller: _tabController,
             labelColor: Colors.black,

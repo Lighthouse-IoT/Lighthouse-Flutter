@@ -451,15 +451,15 @@ class _UserDetailPageState extends State<UserDetailPage>
                         BarChartRodData(
                           toY: totalStudyTimes[index]
                               .toDouble(), // totalStudyTimes[index]를 toDouble()으로 변환
-                          color: Colors.blue, // 전체 공부 시간 막대 색상
-                          width: 12,
+                          color: Color(0xFFF26B0F),
+                          width: 14,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         BarChartRodData(
                           toY: realStudyTimes[index]
                               .toDouble(), // realStudyTimes[index]를 toDouble()으로 변환
-                          color: Colors.green, // 순공부 시간 막대 색상
-                          width: 12,
+                          color: Color(0xFFFCC737),
+                          width: 14,
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ],
@@ -472,29 +472,51 @@ class _UserDetailPageState extends State<UserDetailPage>
 
             // 하단 요약 정보
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(Icons.timeline, size: 20),
-                Text('5일 평균 수치입니다'),
+                Row(
+                  children: [
+                    Container(width: 10, height: 10, color: Color(0xFFF26B0F)),
+                    Text("측정 공부 시간"),
+                    SizedBox(
+                      width: 12,
+                    ),
+                    Container(width: 10, height: 10, color: Color(0xFFFCC737)),
+                    Text("실제 실제 시간"),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Icon(Icons.timeline, size: 20),
+                    Text('5일 평균 수치입니다'),
+                  ],
+                ),
               ],
             ),
             SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('평균 순공부 시간', style: TextStyle(fontSize: 18)),
+                Text('평균 순공부 시간',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
                 Text(
                     '${(averageStudyTime ~/ 60)}시간 ${(averageStudyTime % 60)}분',
-                    style: TextStyle(fontSize: 18)),
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
               ],
             ),
             SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('총 공부 시간', style: TextStyle(fontSize: 18)),
+                Text('총 공부 시간',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
                 Text('${(totalStudyTime ~/ 60)}시간 ${(totalStudyTime % 60)}분',
-                    style: TextStyle(fontSize: 18)),
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
               ],
             ),
           ],
@@ -519,6 +541,8 @@ class _UserDetailPageState extends State<UserDetailPage>
       itemBuilder: (context, index) {
         final wrongAnswer = solvedWrongAnswers[index];
         return Card(
+          color: Colors.white,
+          shadowColor: Color(0xFFFFCEB0),
           margin: EdgeInsets.all(10),
           elevation: 5,
           child: Padding(
@@ -549,13 +573,13 @@ class _UserDetailPageState extends State<UserDetailPage>
                       ? '오답 풀이: ${wrongAnswer['review_text']}'
                       : '오답 풀이가 없습니다.',
                   style: TextStyle(
-                    color: (wrongAnswer.containsKey('review_text') &&
-                            (wrongAnswer['review_text'] != null &&
-                                wrongAnswer['review_text'].isNotEmpty))
-                        ? Colors.black
-                        : Colors.grey,
-                    fontSize: 16,
-                  ),
+                      color: (wrongAnswer.containsKey('review_text') &&
+                              (wrongAnswer['review_text'] != null &&
+                                  wrongAnswer['review_text'].isNotEmpty))
+                          ? Colors.black
+                          : Colors.grey,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700),
                 ),
               ],
             ),
@@ -603,9 +627,9 @@ class _UserDetailPageState extends State<UserDetailPage>
         title: const Text("사용자 정보"),
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Color(0xFF3f51b5), // 눌린 탭의 텍스트 색
+          labelColor: Color(0xff3d3d3d), // 눌린 탭의 텍스트 색
           unselectedLabelColor: Colors.grey, // 눌리지 않은 탭의 텍스트 색
-          indicatorColor: Colors.blue,
+          indicatorColor: Color(0xffff6721),
           tabs: [
             Tab(text: '통계'),
             Tab(text: '오답 노트'),
@@ -618,14 +642,14 @@ class _UserDetailPageState extends State<UserDetailPage>
           _buildStatsTab(),
           _isLoading
               ? Center(child: CircularProgressIndicator())
-              // : errorMessage.isNotEmpty
-              //     ? Center(
-              //         child: Text(
-              //           errorMessage,
-              //           style: TextStyle(color: Colors.red),
-              //         ),
-              //       )
-              : _buildWrongAnswersTab(),
+              : errorMessage.isNotEmpty
+                  ? Center(
+                      child: Text(
+                        errorMessage,
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    )
+                  : _buildWrongAnswersTab(),
         ],
       ),
     );

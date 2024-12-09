@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter21/auth/loginpage.dart';
 import 'package:flutter21/constants.dart';
 import 'dart:io';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -116,22 +117,27 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Row(
                   children: [
-                    if (userImage != null)
-                      GestureDetector(
-                        onTap: _pickImage,
-                        child: ClipOval(
-                          child: Image.network(
-                            Uri.encodeFull(
-                                '$userImage?${DateTime.now().millisecondsSinceEpoch}'),
-                            key: UniqueKey(),
+                    userImage != null
+                        ? GestureDetector(
+                            onTap: _pickImage,
+                            child: ClipOval(
+                              child: Image.network(
+                                Uri.encodeFull(
+                                    '$userImage?${DateTime.now().millisecondsSinceEpoch}'),
+                                key: UniqueKey(),
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Text('이미지를 불러올 수 없습니다.'),
+                              ),
+                            ),
+                          )
+                        : Container(
                             width: 60,
                             height: 60,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Text('이미지를 불러올 수 없습니다.'),
+                            child: Center(child: Text("loading...")),
                           ),
-                        ),
-                      ),
                     const SizedBox(width: 16),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,69 +157,44 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                // Column(
-                //   children: [
-                //     Row(
-                //       mainAxisAlignment: MainAxisAlignment
-                //           .spaceEvenly, // 아이콘과 텍스트 간 간격을 고르게 설정
-                //       children: [
-                //         // 첫 번째 아이콘과 텍스트
-                //         // Column(
-                //         //   mainAxisAlignment: MainAxisAlignment.center,
-                //         //   children: [
-                //         //     // IconButton(
-                //         //     //   onPressed: () {
-                //         //     //     Navigator.push(
-                //         //     //       context,
-                //         //     //       MaterialPageRoute(
-                //         //     //         builder: (context) => Startexam(),
-                //         //     //       ),
-                //         //     //     );
-                //         //     //   },
-                //         //     //   icon: const Icon(Icons.mark_chat_read_outlined),
-                //         //     //   iconSize: 40, // 아이콘 크기 키우기
-                //         //     //   padding: const EdgeInsets.all(0), // 아이콘 간격 기본
-                //         //     //   color: Colors.black,
-                //         //     // ),
-                //         //     // const Text(
-                //         //     //   '배치고사',
-                //         //     //   style: TextStyle(
-                //         //     //       fontSize: 12, color: Colors.black54,
-                //         //     //       fontWeight: FontWeight.w700),
-                //         //     // ),
-                //         //   ],
-                //         // ),
-                //         const SizedBox(width: 20),
-                //         // 두 번째 아이콘과 텍스트
-                //         Column(
-                //           mainAxisAlignment: MainAxisAlignment.center,
-                //           children: [
-                //             IconButton(
-                //               onPressed: () {
-                //                 Navigator.push(
-                //                   context,
-                //                   MaterialPageRoute(
-                //                     builder: (context) => WrongAnswersPage(),
-                //                   ),
-                //                 );
-                //               },
-                //               icon: const Icon(Icons.rate_review_outlined),
-                //               iconSize: 40, // 아이콘 크기 키우기
-                //               padding: const EdgeInsets.all(0), // 아이콘 간격 기본
-                //               color: Colors.black,
-                //             ),
-                //             const Text(
-                //               '오답정리',
-                //               style: TextStyle(
-                //                   fontSize: 12, color: Colors.black54,
-                //                   fontWeight: FontWeight.w700),
-                //             ),
-                //           ],
-                //         ),
-                //       ],
-                //     ),
-                //   ],
-                // )
+                Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .spaceEvenly, // 아이콘과 텍스트 간 간격을 고르게 설정
+                      children: [
+                        // 첫 번째 아이콘과 텍스트
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                storage.delete(key: 'idToken');
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Loginpage(),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.logout),
+                              iconSize: 32, // 아이콘 크기 키우기
+                              padding: const EdgeInsets.all(0), // 아이콘 간격 기본
+                              color: Colors.black,
+                            ),
+                            const Text(
+                              '로그아웃',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black54,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                )
               ],
             ),
             SizedBox(height: 20),
