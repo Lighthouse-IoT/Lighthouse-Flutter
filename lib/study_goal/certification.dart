@@ -107,7 +107,16 @@ class _CertificationSelectionScreenState
                                 ? CircularProgressIndicator(
                                     color: Color(0xFFF26B0F), // 로딩 색상
                                   )
-                                : Text("상반신이 나오도록 카메라를 조절해보세요!")),
+                                : Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "📸",
+                                        style: TextStyle(fontSize: 32),
+                                      ),
+                                      Text("상반신과 얼굴이 나오도록 기기를 조정해주세요"),
+                                    ],
+                                  )),
                         // color: Color(0xFFFFF4EB),
                       ),
                 SizedBox(
