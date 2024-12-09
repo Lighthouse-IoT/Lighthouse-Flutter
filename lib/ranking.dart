@@ -83,141 +83,137 @@ class _RankingPageState extends State<RankingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white, // 앱 전체 배경색 설정
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'E-ROOM',
+          style: TextStyle(
+              color: Colors.black, fontSize: 24, fontWeight: FontWeight.w700),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
       ),
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'E-ROOM',
-            style: TextStyle(color: Colors.black, fontSize: 24),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          elevation: 0,
-        ),
-        body: FutureBuilder<List<Map<String, dynamic>>>(
-          future: userListFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return const Center(child: Text('데이터를 불러오는데 실패했습니다.'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('사용자 데이터가 없습니다.'));
-            }
-            final userList = snapshot.data!;
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: userListFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return const Center(child: Text('데이터를 불러오는데 실패했습니다.'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('사용자 데이터가 없습니다.'));
+          }
+          final userList = snapshot.data!;
 
-            return Scaffold(
-              appBar: AppBar(
-                title: Text(
-                  '포인트 랭커',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(
+                '포인트 랭커',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
                 ),
-                backgroundColor: Colors.white,
               ),
-              body: Column(
-                children: [
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: userList.length,
-                      padding: EdgeInsets.zero,
-                      itemBuilder: (context, index) {
-                        final user = userList[index];
-                        final rankIcon = getRankIcon(index);
+            ),
+            body: Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: userList.length,
+                    padding: EdgeInsets.zero,
+                    itemBuilder: (context, index) {
+                      final user = userList[index];
+                      final rankIcon = getRankIcon(index);
 
-                        return Container(
+                      return Container(
+                        margin: EdgeInsets.zero,
+                        padding: EdgeInsets.zero,
+                        child: Card(
+                          color: Colors.white,
+                          // 기본 색상만 사용 (순위별 색상 제거)
                           margin: EdgeInsets.zero,
-                          padding: EdgeInsets.zero,
-                          child: Card(
-                            color: Colors.white,
-                            // 기본 색상만 사용 (순위별 색상 제거)
-                            margin: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.zero, // 모서리를 직각으로 설정
-                            ),
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(
-                                vertical: 4,
-                                horizontal: 18,
-                              ),
-                              leading: Container(
-                                width: 110,
-                                child: Row(
-                                  mainAxisSize:
-                                      MainAxisSize.min, // Row의 크기를 최소로 제한
-                                  children: [
-                                    Expanded(
-                                      flex: 1,
-                                      child: Text(
-                                        rankIcon, // 이모지 아이콘 추가
-                                        style: const TextStyle(
-                                          fontSize: 24,
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Text(
-                                        '${index + 1}', // 순위 표시 (index는 0부터 시작하므로 +1)
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                    Flexible(
-                                      flex: 2,
-                                      child: CircleAvatar(
-                                        backgroundImage:
-                                            user['userImage'].isNotEmpty
-                                                ? NetworkImage(
-                                                    '${user['userImage']}?${DateTime.now().millisecondsSinceEpoch}',
-                                                  )
-                                                : const AssetImage(
-                                                        'assets/profile.png')
-                                                    as ImageProvider,
-                                        backgroundColor: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              title: Text(
-                                '${user['userName']}',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              trailing: Text(
-                                '${user['userPoint']}pt',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              onTap: () {
-                                // 클릭 시 UserDetailsPage로 이동하며 userId 전달
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        UserDetailPage(userId: user['userId']),
-                                  ),
-                                );
-                              },
-                            ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.zero, // 모서리를 직각으로 설정
                           ),
-                        );
-                      },
-                    ),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 24,
+                            ),
+                            leading: Container(
+                              width: 110,
+                              child: Row(
+                                mainAxisSize:
+                                    MainAxisSize.min, // Row의 크기를 최소로 제한
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: Text(
+                                      rankIcon, // 이모지 아이콘 추가
+                                      style: const TextStyle(
+                                        fontSize: 24,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Text(
+                                      '${index + 1}', // 순위 표시 (index는 0부터 시작하므로 +1)
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    flex: 2,
+                                    child: CircleAvatar(
+                                      backgroundImage:
+                                          user['userImage'].isNotEmpty
+                                              ? NetworkImage(
+                                                  '${user['userImage']}?${DateTime.now().millisecondsSinceEpoch}',
+                                                )
+                                              : const AssetImage(
+                                                      'assets/profile.png')
+                                                  as ImageProvider,
+                                      backgroundColor: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            title: Text(
+                              '${user['userName']}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            trailing: Text(
+                              '${user['userPoint']}pt',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            onTap: () {
+                              // 클릭 시 UserDetailsPage로 이동하며 userId 전달
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      UserDetailPage(userId: user['userId']),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                ],
-              ),
-            );
-          },
-        ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -244,8 +240,6 @@ class _UserDetailPageState extends State<UserDetailPage>
   List<int> realStudyTimes = [];
   int averageStudyTime = 0;
   int totalStudyTime = 0;
-
-  static const storage = FlutterSecureStorage();
 
   @override
   void initState() {
@@ -457,15 +451,15 @@ class _UserDetailPageState extends State<UserDetailPage>
                         BarChartRodData(
                           toY: totalStudyTimes[index]
                               .toDouble(), // totalStudyTimes[index]를 toDouble()으로 변환
-                          color: Colors.blue, // 전체 공부 시간 막대 색상
-                          width: 12,
+                          color: Color(0xFFF26B0F),
+                          width: 14,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         BarChartRodData(
                           toY: realStudyTimes[index]
                               .toDouble(), // realStudyTimes[index]를 toDouble()으로 변환
-                          color: Colors.green, // 순공부 시간 막대 색상
-                          width: 12,
+                          color: Color(0xFFFCC737),
+                          width: 14,
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ],
@@ -478,29 +472,51 @@ class _UserDetailPageState extends State<UserDetailPage>
 
             // 하단 요약 정보
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(Icons.timeline, size: 20),
-                Text('5일 평균 수치입니다'),
+                Row(
+                  children: [
+                    Container(width: 10, height: 10, color: Color(0xFFF26B0F)),
+                    Text("측정 공부 시간"),
+                    SizedBox(
+                      width: 12,
+                    ),
+                    Container(width: 10, height: 10, color: Color(0xFFFCC737)),
+                    Text("실제 실제 시간"),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Icon(Icons.timeline, size: 20),
+                    Text('5일 평균 수치입니다'),
+                  ],
+                ),
               ],
             ),
             SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('평균 순공부 시간', style: TextStyle(fontSize: 18)),
+                Text('평균 순공부 시간',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
                 Text(
                     '${(averageStudyTime ~/ 60)}시간 ${(averageStudyTime % 60)}분',
-                    style: TextStyle(fontSize: 18)),
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
               ],
             ),
             SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('총 공부 시간', style: TextStyle(fontSize: 18)),
+                Text('총 공부 시간',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
                 Text('${(totalStudyTime ~/ 60)}시간 ${(totalStudyTime % 60)}분',
-                    style: TextStyle(fontSize: 18)),
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
               ],
             ),
           ],
@@ -525,6 +541,8 @@ class _UserDetailPageState extends State<UserDetailPage>
       itemBuilder: (context, index) {
         final wrongAnswer = solvedWrongAnswers[index];
         return Card(
+          color: Colors.white,
+          shadowColor: Color(0xFFFFCEB0),
           margin: EdgeInsets.all(10),
           elevation: 5,
           child: Padding(
@@ -555,13 +573,13 @@ class _UserDetailPageState extends State<UserDetailPage>
                       ? '오답 풀이: ${wrongAnswer['review_text']}'
                       : '오답 풀이가 없습니다.',
                   style: TextStyle(
-                    color: (wrongAnswer.containsKey('review_text') &&
-                            (wrongAnswer['review_text'] != null &&
-                                wrongAnswer['review_text'].isNotEmpty))
-                        ? Colors.black
-                        : Colors.grey,
-                    fontSize: 16,
-                  ),
+                      color: (wrongAnswer.containsKey('review_text') &&
+                              (wrongAnswer['review_text'] != null &&
+                                  wrongAnswer['review_text'].isNotEmpty))
+                          ? Colors.black
+                          : Colors.grey,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700),
                 ),
               ],
             ),
@@ -605,12 +623,13 @@ class _UserDetailPageState extends State<UserDetailPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Text("사용자 정보"),
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Color(0xFF3f51b5), // 눌린 탭의 텍스트 색
+          labelColor: Color(0xff3d3d3d), // 눌린 탭의 텍스트 색
           unselectedLabelColor: Colors.grey, // 눌리지 않은 탭의 텍스트 색
-          indicatorColor: Color(0xFF3f51b5),
+          indicatorColor: Color(0xffff6721),
           tabs: [
             Tab(text: '통계'),
             Tab(text: '오답 노트'),
@@ -623,14 +642,14 @@ class _UserDetailPageState extends State<UserDetailPage>
           _buildStatsTab(),
           _isLoading
               ? Center(child: CircularProgressIndicator())
-              // : errorMessage.isNotEmpty
-              //     ? Center(
-              //         child: Text(
-              //           errorMessage,
-              //           style: TextStyle(color: Colors.red),
-              //         ),
-              //       )
-              : _buildWrongAnswersTab(),
+              : errorMessage.isNotEmpty
+                  ? Center(
+                      child: Text(
+                        errorMessage,
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    )
+                  : _buildWrongAnswersTab(),
         ],
       ),
     );

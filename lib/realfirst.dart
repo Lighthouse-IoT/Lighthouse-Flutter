@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'certification.dart';
+import 'package:flutter21/startexam.dart';
 
-class StartScreen extends StatelessWidget {
-  const StartScreen({Key? key}) : super(key: key);
+class FirstScreen extends StatelessWidget {
+  const FirstScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -10,8 +10,7 @@ class StartScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'E-ROOM',
-          style: TextStyle(
-              color: Colors.black, fontSize: 24, fontWeight: FontWeight.w700),
+          style: TextStyle(color: Colors.black, fontSize: 24,fontWeight: FontWeight.w700),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -29,7 +28,7 @@ class StartScreen extends StatelessWidget {
             // 앱 아이덴티티 표현 섹션
             const Text(
               "AI 비서와 함께 더 나은 학습 경험을! \n"
-              "더 효율적으로, 더 똑똑하게 학습하세요.",
+                  "더 효율적으로, 더 똑똑하게 학습하세요.",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 26,
@@ -40,7 +39,7 @@ class StartScreen extends StatelessWidget {
             const SizedBox(height: 10),
             const Text(
               "기출문제를 풀고 실력을 점검하세요. \n"
-              "AI가 당신의 학습을 최적화합니다.\n\n",
+                  "AI가 당신의 학습을 최적화합니다.\n\n",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -50,14 +49,14 @@ class StartScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
+
             // Start 버튼
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        const CertificationSelectionScreen(), // 타이머 화면
+                    builder: (context) => Startexam(), // 타이머 화면
                   ),
                 );
               },
@@ -69,11 +68,12 @@ class StartScreen extends StatelessWidget {
                 ),
               ),
               child: const Text(
-                '공부시작',
+                '배치고사',
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white),
+                    color: Colors.white
+                ),
               ),
             ),
           ],

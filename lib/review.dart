@@ -135,6 +135,8 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
       itemBuilder: (context, index) {
         final wrongAnswer = solvedWrongAnswers[index];
         return Card(
+          color: Colors.white,
+          shadowColor: Color(0xFFFFCEB0),
           margin: EdgeInsets.all(10),
           elevation: 5,
           child: Padding(
@@ -164,7 +166,7 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
                     wrongAnswer['review_text']!.isNotEmpty)
                   Text(
                     '오답 풀이: ${wrongAnswer['review_text']}',
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                   )
                 else
                   Text(
@@ -185,6 +187,8 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
       itemBuilder: (context, index) {
         final wrongAnswer = unsolvedWrongAnswers[index];
         return Card(
+          color: Colors.white,
+          shadowColor: Color(0xFFFFCEB0),
           margin: EdgeInsets.all(10),
           elevation: 5,
           child: Padding(
@@ -194,6 +198,7 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
               children: [
                 // 추가된 ex_license, ex_test, test_img 등 출력
                 Text('${wrongAnswer['ex_license'] ?? '정보 없음'}'),
+                const Divider(height: 40, thickness: 1),
                 Text('문제: ${wrongAnswer['ex_test'] ?? '정보 없음'}'),
                 if (wrongAnswer['test_img'] != null &&
                     wrongAnswer['test_img'].isNotEmpty)
@@ -222,6 +227,8 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
                 ),
                 SizedBox(height: 8),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFF26B0F)),
                   onPressed: () async {
                     final answerNote = controllers[index].text.trim();
                     if (answerNote.isNotEmpty) {
@@ -232,7 +239,11 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
                       );
                     }
                   },
-                  child: Text('저장하기'),
+                  child: Text(
+                    '작성',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w700),
+                  ),
                 ),
               ],
             ),
@@ -285,15 +296,18 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("오답 노트"),
+          title: const Text(
+            "오답 노트",
+            style: TextStyle(fontWeight: FontWeight.w700),
+          ),
           bottom: TabBar(
             controller: _tabController,
-            labelColor: Colors.blue,
+            labelColor: Colors.black,
             unselectedLabelColor: Colors.grey,
-            indicatorColor: Colors.blue,
+            indicatorColor: Color(0xFFF26B0F),
             tabs: [
-              Tab(text: "푼 오답 문제"),
-              Tab(text: "안 푼 오답 문제"),
+              Tab(text: "작성 완료"),
+              Tab(text: "작성 중"),
             ],
           ),
         ),
