@@ -1,6 +1,5 @@
 import 'dart:convert'; // JSON 인코딩/디코딩
 import 'package:flutter/material.dart';
-import 'package:flutter21/auth/home.dart';
 import 'package:flutter21/constants.dart';
 import 'package:flutter21/pagecontainer.dart';
 import 'package:http/http.dart' as http;
@@ -221,14 +220,24 @@ class _QuestionScreenState extends State<Exam> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFF26B0F),),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFF26B0F),
+                  ),
                   onPressed: nextQuestion,
-                  child: Text('이전 문제',style: TextStyle(color: Colors.white),),
+                  child: Text(
+                    '이전 문제',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFF26B0F),),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFF26B0F),
+                  ),
                   onPressed: nextQuestion,
-                  child: Text('다음 문제',style: TextStyle(color: Colors.white),),
+                  child: Text(
+                    '다음 문제',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),
@@ -308,7 +317,9 @@ class ResultPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20), // 간격 추가
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFF26B0F),),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFF26B0F),
+                    ),
                     onPressed: () {
                       Navigator.pushAndRemoveUntil(
                         context,
@@ -317,7 +328,10 @@ class ResultPage extends StatelessWidget {
                         (route) => false,
                       );
                     },
-                    child: const Text('홈으로 가기',style: TextStyle(color: Colors.white),),
+                    child: const Text(
+                      '홈으로 가기',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ],
               ),

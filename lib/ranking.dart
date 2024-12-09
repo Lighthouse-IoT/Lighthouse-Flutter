@@ -81,139 +81,141 @@ class _RankingPageState extends State<RankingPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'E-ROOM',
-            style: TextStyle(color: Colors.black, fontSize: 24,fontWeight: FontWeight.w700),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          elevation: 0,
+      appBar: AppBar(
+        title: const Text(
+          'E-ROOM',
+          style: TextStyle(
+              color: Colors.black, fontSize: 24, fontWeight: FontWeight.w700),
         ),
-        body: FutureBuilder<List<Map<String, dynamic>>>(
-          future: userListFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return const Center(child: Text('데이터를 불러오는데 실패했습니다.'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('사용자 데이터가 없습니다.'));
-            }
-            final userList = snapshot.data!;
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: userListFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return const Center(child: Text('데이터를 불러오는데 실패했습니다.'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('사용자 데이터가 없습니다.'));
+          }
+          final userList = snapshot.data!;
 
-            return Scaffold(
-              appBar: AppBar(
-                title: Text(
-                  '포인트 랭커',
-                  style: TextStyle(fontWeight: FontWeight.bold,),
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(
+                '포인트 랭커',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              body: Column(
-                children: [
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: userList.length,
-                      padding: EdgeInsets.zero,
-                      itemBuilder: (context, index) {
-                        final user = userList[index];
-                        final rankIcon = getRankIcon(index);
+            ),
+            body: Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: userList.length,
+                    padding: EdgeInsets.zero,
+                    itemBuilder: (context, index) {
+                      final user = userList[index];
+                      final rankIcon = getRankIcon(index);
 
-                        return Container(
+                      return Container(
+                        margin: EdgeInsets.zero,
+                        padding: EdgeInsets.zero,
+                        child: Card(
+                          color: Colors.white,
+                          // 기본 색상만 사용 (순위별 색상 제거)
                           margin: EdgeInsets.zero,
-                          padding: EdgeInsets.zero,
-                          child: Card(
-                            color: Colors.white,
-                            // 기본 색상만 사용 (순위별 색상 제거)
-                            margin: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.zero, // 모서리를 직각으로 설정
-                            ),
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(
-                                vertical: 8,
-                                horizontal: 24,
-                              ),
-                              leading: Container(
-                                width: 110,
-                                child: Row(
-                                  mainAxisSize:
-                                      MainAxisSize.min, // Row의 크기를 최소로 제한
-                                  children: [
-                                    Expanded(
-                                      flex: 1,
-                                      child: Text(
-                                        rankIcon, // 이모지 아이콘 추가
-                                        style: const TextStyle(
-                                          fontSize: 24,
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Text(
-                                        '${index + 1}', // 순위 표시 (index는 0부터 시작하므로 +1)
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                    Flexible(
-                                      flex: 2,
-                                      child: CircleAvatar(
-                                        backgroundImage:
-                                            user['userImage'].isNotEmpty
-                                                ? NetworkImage(
-                                                    '${user['userImage']}?${DateTime.now().millisecondsSinceEpoch}',
-                                                  )
-                                                : const AssetImage(
-                                                        'assets/profile.png')
-                                                    as ImageProvider,
-                                        backgroundColor: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              title: Text(
-                                '${user['userName']}',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              trailing: Text(
-                                '${user['userPoint']}pt',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              onTap: () {
-                                // 클릭 시 UserDetailsPage로 이동하며 userId 전달
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        UserDetailPage(userId: user['userId']),
-                                  ),
-                                );
-                              },
-                            ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.zero, // 모서리를 직각으로 설정
                           ),
-                        );
-                      },
-                    ),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 24,
+                            ),
+                            leading: Container(
+                              width: 110,
+                              child: Row(
+                                mainAxisSize:
+                                    MainAxisSize.min, // Row의 크기를 최소로 제한
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: Text(
+                                      rankIcon, // 이모지 아이콘 추가
+                                      style: const TextStyle(
+                                        fontSize: 24,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Text(
+                                      '${index + 1}', // 순위 표시 (index는 0부터 시작하므로 +1)
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    flex: 2,
+                                    child: CircleAvatar(
+                                      backgroundImage:
+                                          user['userImage'].isNotEmpty
+                                              ? NetworkImage(
+                                                  '${user['userImage']}?${DateTime.now().millisecondsSinceEpoch}',
+                                                )
+                                              : const AssetImage(
+                                                      'assets/profile.png')
+                                                  as ImageProvider,
+                                      backgroundColor: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            title: Text(
+                              '${user['userName']}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            trailing: Text(
+                              '${user['userPoint']}pt',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            onTap: () {
+                              // 클릭 시 UserDetailsPage로 이동하며 userId 전달
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      UserDetailPage(userId: user['userId']),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                ],
-              ),
-            );
-          },
-        ),
-      );
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 }
 
@@ -238,8 +240,6 @@ class _UserDetailPageState extends State<UserDetailPage>
   List<int> realStudyTimes = [];
   int averageStudyTime = 0;
   int totalStudyTime = 0;
-
-  static const storage = FlutterSecureStorage();
 
   @override
   void initState() {

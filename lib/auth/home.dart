@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter21/constants.dart';
-import 'package:flutter21/startexam.dart';
 import 'dart:io';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
 import '../mypage/study_stats.dart';
-import '../review.dart';
-
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -103,7 +100,8 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text(
           'E-ROOM',
-          style: TextStyle(color: Colors.black, fontSize: 24,fontWeight: FontWeight.w700 ),
+          style: TextStyle(
+              color: Colors.black, fontSize: 24, fontWeight: FontWeight.w700),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -145,7 +143,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        Text('${userPoint.toString()} 포인트',style: TextStyle(fontWeight: FontWeight.w700),),
+                        Text(
+                          '${userPoint.toString()} 포인트',
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
                       ],
                     ),
                   ],

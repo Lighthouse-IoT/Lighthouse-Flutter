@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter21/auth/home.dart';
 import 'package:flutter21/constants.dart';
 import 'package:flutter21/model/exam.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -92,29 +91,37 @@ class _CertificationSelectionScreenState
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-
-                _image != null ? Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: _image!,
-                ) : Container(
-                  height:280,width: 360,
-                  decoration: BoxDecoration(
-                    color: Color(0xFFFFF4EB),
-                    borderRadius: BorderRadius.circular(16), // 박스를 둥글게 처리
-                  ),
-                  child:Center(
-                      child: _isLoading
-                          ? CircularProgressIndicator(
-                        color: Color(0xFFF26B0F), // 로딩 색상
+                _image != null
+                    ? Padding(
+                        padding: const EdgeInsets.all(32.0),
+                        child: _image!,
                       )
-                      :Text("상반신이 나오도록 카메라를 조절해보세요!")),
-                  // color: Color(0xFFFFF4EB),
+                    : Container(
+                        height: 280, width: 360,
+                        decoration: BoxDecoration(
+                          color: Color(0xFFFFF4EB),
+                          borderRadius: BorderRadius.circular(16), // 박스를 둥글게 처리
+                        ),
+                        child: Center(
+                            child: _isLoading
+                                ? CircularProgressIndicator(
+                                    color: Color(0xFFF26B0F), // 로딩 색상
+                                  )
+                                : Text("상반신이 나오도록 카메라를 조절해보세요!")),
+                        // color: Color(0xFFFFF4EB),
+                      ),
+                SizedBox(
+                  height: 24,
                 ),
-                SizedBox(height: 24,),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFF26B0F),),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFF26B0F),
+                  ),
                   onPressed: fetchImage,
-                  child: Text("카메라 확인하기",style: TextStyle(color: Colors.white),),
+                  child: Text(
+                    "카메라 확인하기",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),
