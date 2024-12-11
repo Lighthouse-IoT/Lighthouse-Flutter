@@ -35,6 +35,18 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
     // TabController 초기화
     _tabController =
         TabController(length: 2, vsync: this); // 탭의 개수에 맞게 length 설정
+
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        if (_tabController.indexIsChanging) {
+          if (_tabController.index == 0) {
+            fetchWrongAnswers();
+          } else {
+            fetchWrongAnswers();
+          }
+        }
+      }
+    });
   }
 
   @override
@@ -113,6 +125,7 @@ class _WrongAnswersPageState extends State<WrongAnswersPage>
       );
 
       if (response.statusCode == 200) {
+        fetchWrongAnswers();
         setState(() {
           solvedWrongAnswers.add(unsolvedWrongAnswers.removeAt(index));
           controllers.removeAt(index);

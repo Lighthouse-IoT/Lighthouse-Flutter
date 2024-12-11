@@ -60,6 +60,7 @@ flutter:
   assets:
     - assets/profile.png
     - assets/eroomlogo.png
+    - assets/goodjob.png
     - assets/fonts/
 
   # The following line ensures that the Material Icons font is
