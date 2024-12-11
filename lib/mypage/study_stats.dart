@@ -263,7 +263,7 @@ class _LearningStatsScreenState extends State<LearningStatsScreen> {
                       ),
                       Container(
                           width: 10, height: 10, color: Color(0xFFFCC737)),
-                      Text("실제 실제 시간"),
+                      Text("실제 공부 시간"),
                     ],
                   ),
                   Row(

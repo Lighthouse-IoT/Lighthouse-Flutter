@@ -252,7 +252,7 @@ class ResultPage extends StatelessWidget {
   static const storage = FlutterSecureStorage();
   dynamic userInfo = '';
 
-  Future<int> fetchPoint() async {
+  Future<Map<dynamic, dynamic>> fetchPoint() async {
     final userId = await storage.read(key: 'idToken');
     final url = Uri.parse('$baseUrl/exam/result');
 
@@ -273,7 +273,11 @@ class ResultPage extends StatelessWidget {
       if (response.statusCode == 200) {
         final Map<String, dynamic> decodedData = jsonDecode(response.body);
         print('디코딩된 데이터: $decodedData');
-        return decodedData['point'];
+        return {
+          "point": decodedData['point'],
+          "recording": decodedData['recordingTime'],
+          "study": decodedData['studyTime']
+        };
       } else {
         throw Exception('점수를 가져오는 데 실패했습니다. 상태 코드: ${response.statusCode}');
       }
@@ -286,8 +290,7 @@ class ResultPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("User Points")),
-      body: FutureBuilder<int>(
+      body: FutureBuilder<Map<dynamic, dynamic>>(
         future: fetchPoint(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -311,8 +314,34 @@ class ResultPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  Container(
+                    width: 120,
+                    height: 120,
+                    child: Image.asset(
+                      'assets/goodjob.png',
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
                   Text(
-                    '획득한 점수: ${snapshot.data}',
+                    '멋져요! 앞으로도 계속 공부해봐요',
+                    style: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.w700),
+                  ),
+                  SizedBox(
+                    height: 100,
+                  ),
+                  Text(
+                    '측정 시간: ${snapshot.data!['recording']}',
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                  Text(
+                    '공부 시간: ${snapshot.data!['study']}',
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                  Text(
+                    '획득 포인트 : ${snapshot.data!['point']}',
                     style: const TextStyle(fontSize: 24),
                   ),
                   const SizedBox(height: 20), // 간격 추가
